@@ -1,37 +1,76 @@
 <?php
-include '../models/Prontuario.php';
 session_start();
+include '../models/Prontuario.php';
 
-if(!isset($_SESSION['perfil']) || !in_array($_SESSION['perfil'], ['medico'])){
+// Verifica se o usuário é médico
+if(!isset($_SESSION['perfil']) || $_SESSION['perfil'] != 'medico'){
+    $_SESSION['msg_erro'] = "Acesso negado.";
     header('Location: ../index.php');
     exit;
 }
 
-if(isset($_POST['acao'])){
+// Recebe dados do formulário
+$acao = $_POST['acao'] ?? '';
+$paciente_id = $_POST['paciente_id'] ?? null;
+$descricao = $_POST['descricao'] ?? '';
+$medico_id = $_SESSION['id_usuario'] ?? null; // pega o ID do médico logado
 
-    $paciente_id = $_POST['paciente_id'];
-    $medico_id = $_SESSION['id_usuario'];
-
-    if($_POST['acao'] == 'evolucao'){
-        Prontuario::registrarEvolucao($paciente_id, $medico_id, $_POST['descricao']);
-        echo "Evolução registrada!";
-    }
-
-    if($_POST['acao'] == 'prescricao'){
-        Prontuario::registrarPrescricao($paciente_id, $medico_id, $_POST['medicamento'], $_POST['posologia']);
-        echo "Prescrição registrada!";
-    }
-
-    if($_POST['acao'] == 'procedimento'){
-        Prontuario::registrarProcedimento($paciente_id, $medico_id, $_POST['descricao']);
-        echo "Procedimento registrado!";
-    }
-
-    if($_POST['acao'] == 'exame' && isset($_FILES['arquivo'])){
-        $nome_arquivo = 'uploads/'.basename($_FILES['arquivo']['name']);
-        move_uploaded_file($_FILES['arquivo']['tmp_name'], '../../'.$nome_arquivo);
-        Prontuario::registrarExame($paciente_id, $medico_id, $nome_arquivo, $_POST['descricao']);
-        echo "Exame registrado!";
-    }
+// Valida paciente_id
+if(empty($paciente_id)){
+    $_SESSION['msg_erro'] = "Selecione um paciente antes de registrar!";
+    header('Location: ../views/prontuario/prontuario.php');
+    exit;
 }
-?>
+
+// Valida medico_id
+if(empty($medico_id)){
+    $_SESSION['msg_erro'] = "Não foi possível identificar o médico. Faça login novamente.";
+    header('Location: ../index.php');
+    exit;
+}
+
+try {
+    switch($acao){
+        case 'prescricao':
+            if(empty($descricao)){
+                throw new Exception("A descrição da prescrição não pode ficar vazia.");
+            }
+            Prontuario::registrarPrescricao($paciente_id, $medico_id, $descricao);
+            $_SESSION['msg_sucesso'] = "Prescrição registrada com sucesso!";
+            break;
+
+        case 'evolucao':
+            if(empty($descricao)){
+                throw new Exception("A descrição da evolução não pode ficar vazia.");
+            }
+            Prontuario::registrarEvolucao($paciente_id, $medico_id, $descricao);
+            $_SESSION['msg_sucesso'] = "Evolução registrada com sucesso!";
+            break;
+
+        case 'procedimento':
+            if(empty($descricao)){
+                throw new Exception("A descrição do procedimento não pode ficar vazia.");
+            }
+            Prontuario::registrarProcedimento($paciente_id, $medico_id, $descricao);
+            $_SESSION['msg_sucesso'] = "Procedimento registrado com sucesso!";
+            break;
+
+        case 'exame':
+            $exame_id = $_POST['exame_id'] ?? null;
+            if(empty($exame_id)){
+                throw new Exception("Selecione um tipo de exame.");
+            }
+            Prontuario::registrarExame($paciente_id, $medico_id, $exame_id);
+            $_SESSION['msg_sucesso'] = "Exame registrado com sucesso!";
+            break;
+
+        default:
+            throw new Exception("Ação inválida.");
+    }
+} catch(Exception $e){
+    $_SESSION['msg_erro'] = $e->getMessage();
+}
+
+// Redireciona para a página de prontuário
+header('Location: ../views/prontuario/prontuario.php');
+exit;
