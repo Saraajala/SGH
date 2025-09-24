@@ -10,13 +10,13 @@ include '../../models/Prontuario.php';
 include '../../config.php';
 
 $pacientes = Paciente::listar();
+$medico_id_logado = $_SESSION['id_usuario'] ?? null;
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prontuário Eletrônico - SGH</title>
 </head>
 <body>
@@ -24,17 +24,17 @@ $pacientes = Paciente::listar();
 
 <!-- Mensagens -->
 <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-    <div class="msg-sucesso"><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
+    <div style="color:green;"><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
     <?php unset($_SESSION['msg_sucesso']); ?>
 <?php endif; ?>
 
 <?php if(!empty($_SESSION['msg_erro'])): ?>
-    <div class="msg-erro"><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
+    <div style="color:red;"><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
     <?php unset($_SESSION['msg_erro']); ?>
 <?php endif; ?>
 
 <!-- Seleção de Paciente -->
-<div class="section">
+<div>
     <label><strong>Selecionar Paciente:</strong></label>
     <select id="selectPaciente" required>
         <option value="">-- Selecione um paciente --</option>
@@ -54,23 +54,23 @@ $acoes = [
 ];
 foreach($acoes as $acao => $label):
 ?>
-<div class="section">
+<div>
     <h3><?= $label ?></h3>
     <form method="POST" action="../../controllers/ProntuarioController.php" class="form-prontuario">
         <input type="hidden" name="paciente_id" class="paciente_id_hidden">
         <?php if($acao !== 'exame'): ?>
-            <textarea name="descricao" placeholder="Descreva..." required></textarea><br>
+            <textarea name="descricao" placeholder="Descreva..." required></textarea>
         <?php else: ?>
-            <label><strong>Tipo de Exame:</strong></label>
+            <label>Tipo de Exame:</label>
             <select name="exame_id" required>
-                <option value="">-- Selecione o tipo de exame --</option>
+                <option value="">-- Selecione --</option>
                 <?php
                 $exames = $pdo->query("SELECT * FROM exames_cadastrados ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
                 foreach($exames as $ex):
                 ?>
                     <option value="<?= $ex['id'] ?>"><?= htmlspecialchars($ex['nome']) ?></option>
                 <?php endforeach; ?>
-            </select><br><br>
+            </select>
         <?php endif; ?>
         <input type="hidden" name="acao" value="<?= $acao ?>">
         <button type="submit"><?= $label ?></button>
@@ -81,65 +81,106 @@ foreach($acoes as $acao => $label):
 <hr>
 
 <!-- Histórico -->
-<div class="historico">
+<div>
 <h3>Histórico Completo</h3>
-<?php if(empty($pacientes)): ?>
-    <p>Nenhum paciente cadastrado.</p>
-<?php else: ?>
-    <?php foreach($pacientes as $p): ?>
-        <div class="paciente-section">
-            <h4><?= htmlspecialchars($p['nome']) ?> (ID: <?= $p['id'] ?>)</h4>
+<?php foreach($pacientes as $p): ?>
+    <div>
+        <h4><?= htmlspecialchars($p['nome']) ?> (ID: <?= $p['id'] ?>)</h4>
 
-            <h5>Evoluções:</h5>
-            <?php $evol = Prontuario::listarEvolucoes($p['id']); ?>
-            <?php if(empty($evol)): ?>
-                <p>Nenhuma evolução registrada.</p>
-            <?php else: ?>
-                <?php foreach($evol as $e): ?>
-                    <?php $data = date('d/m/Y H:i', strtotime($e['data'])); ?>
-                    <p><strong><?= $data ?></strong> - Dr(a). <?= htmlspecialchars($e['medico_nome'] ?? 'N/A') ?>: <?= htmlspecialchars($e['descricao']) ?></p>
-                <?php endforeach; ?>
-            <?php endif; ?>
+        <!-- Evoluções -->
+        <h5>Evoluções:</h5>
+        <?php $evol = Prontuario::listarEvolucoes($p['id']); ?>
+        <?php if(empty($evol)): ?>
+            <p>Nenhuma evolução registrada.</p>
+        <?php else: ?>
+            <?php foreach($evol as $e): ?>
+                <p>
+                    <strong><?= date('d/m/Y H:i', strtotime($e['data'])) ?></strong> - 
+                    Dr(a). <?= htmlspecialchars($e['medico_nome']) ?>: 
+                    <?= htmlspecialchars($e['descricao']) ?>
+                    <?php if($e['medico_id'] == $medico_id_logado): ?>
+                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                            <input type="hidden" name="acao" value="excluir_evolucao">
+                            <input type="hidden" name="id" value="<?= $e['id'] ?>">
+                            <button type="submit" onclick="return confirm('Excluir evolução?')">Excluir</button>
+                        </form>
+                    <?php endif; ?>
+                </p>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
-            <h5>Prescrições:</h5>
-            <?php $presc = Prontuario::listarPrescricoes($p['id']); ?>
-            <?php if(empty($presc)): ?>
-                <p>Nenhuma prescrição registrada.</p>
-            <?php else: ?>
-                <?php foreach($presc as $pr): ?>
-                    <?php $data = date('d/m/Y H:i', strtotime($pr['data'])); ?>
-                    <p><strong><?= $data ?></strong> - Dr(a). <?= htmlspecialchars($pr['medico_nome'] ?? 'N/A') ?>: <?= htmlspecialchars($pr['descricao']) ?></p>
-                <?php endforeach; ?>
-            <?php endif; ?>
+        <!-- Prescrições -->
+        <h5>Prescrições:</h5>
+        <?php $presc = Prontuario::listarPrescricoes($p['id']); ?>
+        <?php if(empty($presc)): ?>
+            <p>Nenhuma prescrição registrada.</p>
+        <?php else: ?>
+            <?php foreach($presc as $pr): ?>
+                <p>
+                    <strong><?= date('d/m/Y H:i', strtotime($pr['data'])) ?></strong> - 
+                    Dr(a). <?= htmlspecialchars($pr['medico_nome']) ?>: 
+                    <?= htmlspecialchars($pr['descricao']) ?>
+                    <?php if($pr['medico_id'] == $medico_id_logado): ?>
+                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                            <input type="hidden" name="acao" value="excluir_prescricao">
+                            <input type="hidden" name="id" value="<?= $pr['id'] ?>">
+                            <button type="submit" onclick="return confirm('Excluir prescrição?')">Excluir</button>
+                        </form>
+                    <?php endif; ?>
+                </p>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
-            <h5>Procedimentos:</h5>
-            <?php $proc = Prontuario::listarProcedimentos($p['id']); ?>
-            <?php if(empty($proc)): ?>
-                <p>Nenhum procedimento registrado.</p>
-            <?php else: ?>
-                <?php foreach($proc as $prc): ?>
-                    <?php $data = date('d/m/Y H:i', strtotime($prc['data'])); ?>
-                    <p><strong><?= $data ?></strong>: <?= htmlspecialchars($prc['descricao']) ?></p>
-                <?php endforeach; ?>
-            <?php endif; ?>
+        <!-- Procedimentos -->
+        <h5>Procedimentos:</h5>
+        <?php $proc = Prontuario::listarProcedimentos($p['id']); ?>
+        <?php if(empty($proc)): ?>
+            <p>Nenhum procedimento registrado.</p>
+        <?php else: ?>
+            <?php foreach($proc as $prc): ?>
+                <p>
+                    <strong><?= date('d/m/Y H:i', strtotime($prc['data'])) ?></strong> - 
+                    Dr(a). <?= htmlspecialchars($prc['medico_nome']) ?>: 
+                    <?= htmlspecialchars($prc['descricao']) ?>
+                    <?php if($prc['medico_id'] == $medico_id_logado): ?>
+                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                            <input type="hidden" name="acao" value="excluir_procedimento">
+                            <input type="hidden" name="id" value="<?= $prc['id'] ?>">
+                            <button type="submit" onclick="return confirm('Excluir procedimento?')">Excluir</button>
+                        </form>
+                    <?php endif; ?>
+                </p>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
-            <h5>Exames:</h5>
-            <?php $exs = Prontuario::listarExames($p['id']); ?>
-            <?php if(empty($exs)): ?>
-                <p>Nenhum exame registrado.</p>
-            <?php else: ?>
-                <?php foreach($exs as $ex): ?>
-                    <?php $data = date('d/m/Y H:i', strtotime($ex['data'])); ?>
-                    <p><strong><?= $data ?></strong> - Dr(a). <?= htmlspecialchars($ex['medico_nome'] ?? 'N/A') ?>: <?= htmlspecialchars($ex['exame_nome']) ?></p>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-        <hr>
-    <?php endforeach; ?>
-<?php endif; ?>
+        <!-- Exames -->
+        <h5>Exames:</h5>
+        <?php $exs = Prontuario::listarExames($p['id']); ?>
+        <?php if(empty($exs)): ?>
+            <p>Nenhum exame registrado.</p>
+        <?php else: ?>
+            <?php foreach($exs as $ex): ?>
+                <p>
+                    <strong><?= date('d/m/Y H:i', strtotime($ex['data'])) ?></strong> - 
+                    Dr(a). <?= htmlspecialchars($ex['medico_nome']) ?>: 
+                    <?= htmlspecialchars($ex['exame_nome']) ?>
+                    <?php if($ex['medico_id'] == $medico_id_logado): ?>
+                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                            <input type="hidden" name="acao" value="excluir_exame">
+                            <input type="hidden" name="id" value="<?= $ex['id'] ?>">
+                            <button type="submit" onclick="return confirm('Excluir exame?')">Excluir</button>
+                        </form>
+                    <?php endif; ?>
+                </p>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+    </div>
+    <hr>
+<?php endforeach; ?>
 </div>
 
-<a href="../dashboard.php"><button type="button">Voltar ao Dashboard</button></a>
+<a href="../dashboard.php"><button>Voltar ao Dashboard</button></a>
 
 <script>
 const selectPaciente = document.getElementById('selectPaciente');
@@ -153,20 +194,8 @@ function atualizarPacienteHidden() {
     });
 }
 
-// Inicializa e atualiza ao mudar o select
 atualizarPacienteHidden();
 selectPaciente.addEventListener('change', atualizarPacienteHidden);
-
-// Validação de envio
-forms.forEach(form => {
-    form.addEventListener('submit', function(e){
-        const pacienteId = this.querySelector('.paciente_id_hidden').value;
-        if(!pacienteId){
-            e.preventDefault();
-            alert('Selecione um paciente antes de registrar.');
-        }
-    });
-});
 </script>
 </body>
 </html>

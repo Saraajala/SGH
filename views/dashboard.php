@@ -27,8 +27,7 @@ $perfil = $_SESSION['perfil'];
     <?php if($perfil == 'medico'): ?>
         <li><a href="consulta/agendar.php">Marcar Consulta</a></li>
         <li><a href="prontuario/prontuario.php">Prontuário Eletrônico</a></li>
-        <li><a href="internacao/internar.php">Internar Paciente</a></li>
-        <li><a href="internacao/alta_transferencia.php">Alta / Transferência</a></li>
+        <li><a href="internacao/internacao.php">Internar Paciente</a></li>
         <li><a href="notificacao/listar.php">Notificações</a></li>
         <li><a href="calendario/calendario.php">Calendário</a></li>
     <?php endif; ?>
@@ -49,4 +48,4 @@ $perfil = $_SESSION['perfil'];
     <?php endif; ?>
 </ul>
 
-<p><a href="../controllers/LogoutController.php">Sair</a></p>
+<p><a href="../logout.php">Sair</a></p>

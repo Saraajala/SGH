@@ -1,24 +1,29 @@
 <?php
-include '../models/Internacao.php';
 session_start();
+require_once 'app/models/Internacao.php';
 
-// Apenas médico ou enfermeiro
+// Apenas médico ou enfermeiro podem acessar
 if(!isset($_SESSION['perfil']) || !in_array($_SESSION['perfil'], ['medico','enfermeiro'])){
     header('Location: ../index.php');
     exit;
 }
 
-if(isset($_POST['acao'])){
+$model = new Internacao();
 
-    if($_POST['acao'] == 'internar'){
-        Internacao::internar($_POST['paciente_id'], $_POST['quarto_id'], $_SESSION['id_usuario']);
-        echo "Paciente internado com sucesso!";
-    }
+// Ação recebida via POST
+$acao = $_POST['acao'] ?? '';
 
-    if($_POST['acao'] == 'alta_transferencia'){
-        $novo_quarto = !empty($_POST['novo_quarto_id']) ? $_POST['novo_quarto_id'] : null;
-        Internacao::altaOuTransferencia($_POST['internacao_id'], $novo_quarto, $_SESSION['id_usuario']);
-        echo "Operação realizada com sucesso!";
-    }
+if($acao == 'internar'){
+    $res = $model->internar($_POST['paciente_id'], $_POST['quarto_id'], $_POST['medico_id']);
+    $_SESSION['mensagem'] = $res['erro'] ?? $res['success'];
+} elseif($acao == 'dar_alta') {
+    $res = $model->darAlta($_POST['internacao_id']);
+    $_SESSION['mensagem'] = $res['erro'] ?? $res['success'];
+} elseif($acao == 'transferir') {
+    $res = $model->transferir($_POST['internacao_id'], $_POST['novo_quarto_id']);
+    $_SESSION['mensagem'] = $res['erro'] ?? $res['success'];
 }
+
+header('Location: ../views/internacoes/index.php');
+exit;
 ?>
