@@ -1,80 +1,77 @@
 <?php
 session_start();
-if(!isset($_SESSION['id_usuario'], $_SESSION['perfil'])){
-    header('Location: ../index.php');
-    exit;
-}
-
-include '../../config.php';
 include '../../models/Consulta.php';
 
-$user_id = $_SESSION['id_usuario'];
-$perfil = $_SESSION['perfil'];
-
-// Opções para select
-if($perfil == 'medico'){
-    $stmt = $pdo->query("SELECT id, nome FROM usuarios WHERE perfil='paciente' ORDER BY nome ASC");
-    $opcoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $label = "Paciente";
-    $campo_name = "paciente_id";
-    $acao = "marcar";
-} elseif($perfil == 'paciente'){
-    $stmt = $pdo->query("SELECT id, nome FROM usuarios WHERE perfil='medico' ORDER BY nome ASC");
-    $opcoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $label = "Médico";
-    $campo_name = "medico_id";
-    $acao = "agendar";
-} else {
-    echo "Perfil inválido.";
+if(!isset($_SESSION['id_usuario'])){
+    header('Location: ../login.php');
     exit;
 }
-?>
 
-<h2><?= $perfil == 'medico' ? "Marcar Consulta" : "Agendar Consulta" ?></h2>
+$perfil = $_SESSION['perfil'];
+$user_id = $_SESSION['id_usuario'];
 
-<form method="POST" action="../../controllers/ConsultaController.php">
-    <input type="hidden" name="acao" value="<?= $acao ?>">
-
-    <label><?= $label ?>:</label>
-    <select name="<?= $campo_name ?>" required>
-        <option value="">-- Selecione --</option>
-        <?php foreach($opcoes as $o): ?>
-            <option value="<?= $o['id'] ?>"><?= htmlspecialchars($o['nome']) ?></option>
-        <?php endforeach; ?>
-    </select><br><br>
-
-    <label>Data:</label>
-    <input type="date" name="data" required><br><br>
-
-    <label>Hora:</label>
-    <input type="time" name="hora" required><br><br>
-
-    <button type="submit"><?= $perfil == 'medico' ? "Marcar Consulta" : "Agendar Consulta" ?></button>
-</form>
-
-<hr>
-<h3>Consultas Agendadas:</h3>
-<?php
-$consultas = $perfil == 'medico' ? Consulta::listarPorMedico($user_id) : Consulta::listarPorPaciente($user_id);
-if($consultas){
-    echo "<ul>";
-    foreach($consultas as $c){
-        $data_formatada = date('d/m/Y', strtotime($c['data']));
-        $hora_formatada = date('H:i', strtotime($c['hora']));
-
-        if($perfil == 'medico'){
-            echo "<li>Paciente: {$c['paciente_nome']} | Data: {$data_formatada} | Hora: {$hora_formatada}</li>";
-        } else {
-            echo "<li>Médico: {$c['medico_nome']} | Data: {$data_formatada} | Hora: {$hora_formatada}</li>";
-        }
-    }
-    echo "</ul>";
-} else {
-    echo "<p>Nenhuma consulta agendada.</p>";
+if($perfil == 'paciente'){
+    $medicos = Consulta::listarMedicos();
+} elseif($perfil == 'medico'){
+    $pacientes = Consulta::listarPacientes();
 }
 ?>
 
-<br>
-<a href="../dashboard.php">
-    <button type="button">Voltar ao Dashboard</button>
-</a>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendar Consulta</title>
+</head>
+<body>
+    <h2>Agendar Consulta</h2>
+
+    <!-- Mensagens -->
+    <?php if(!empty($_SESSION['msg_sucesso'])): ?>
+        <div style="color:green; padding: 10px; border: 1px solid green; margin: 10px 0;">
+            <?= htmlspecialchars($_SESSION['msg_sucesso']) ?>
+        </div>
+        <?php unset($_SESSION['msg_sucesso']); ?>
+    <?php endif; ?>
+
+    <?php if(!empty($_SESSION['msg_erro'])): ?>
+        <div style="color:red; padding: 10px; border: 1px solid red; margin: 10px 0;">
+            <?= htmlspecialchars($_SESSION['msg_erro']) ?>
+        </div>
+        <?php unset($_SESSION['msg_erro']); ?>
+    <?php endif; ?>
+
+    <form method="POST" action="../../controllers/ConsultaController.php">
+        <?php if($perfil == 'paciente'): ?>
+            <input type="hidden" name="acao" value="agendar">
+            <label>Médico:</label>
+            <select name="medico_id" required>
+                <option value="">-- Selecione o Médico --</option>
+                <?php foreach($medicos as $medico): ?>
+                    <option value="<?= $medico['id'] ?>"><?= htmlspecialchars($medico['nome']) ?></option>
+                <?php endforeach; ?>
+            </select><br><br>
+        <?php elseif($perfil == 'medico'): ?>
+            <input type="hidden" name="acao" value="marcar">
+            <label>Paciente:</label>
+            <select name="paciente_id" required>
+                <option value="">-- Selecione o Paciente --</option>
+                <?php foreach($pacientes as $paciente): ?>
+                    <option value="<?= $paciente['id'] ?>"><?= htmlspecialchars($paciente['nome']) ?></option>
+                <?php endforeach; ?>
+            </select><br><br>
+        <?php endif; ?>
+
+        <label>Data:</label>
+        <input type="date" name="data" required min="<?= date('Y-m-d') ?>"><br><br>
+
+        <label>Hora:</label>
+        <input type="time" name="hora" required><br><br>
+
+        <button type="submit">Agendar Consulta</button>
+    </form>
+
+    <br>
+    <a href="../dashboard.php">← Voltar ao Dashboard</a>
+</body>
+</html>

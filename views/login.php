@@ -15,6 +15,7 @@
 </form>
 
 <p>Não tem cadastro? <a href="paciente/cadastro.php">Cadastre-se</a></p>
+<p>Esqueceu a senha? <a href="recuperar_senha.php">Mudar senha</a></p>
 
 </body>
 </html>

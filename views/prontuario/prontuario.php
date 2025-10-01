@@ -1,10 +1,12 @@
 <?php
 session_start();
-if(!isset($_SESSION['perfil']) || $_SESSION['perfil'] != 'medico'){
-    header('Location: ../index.php');
+if(!isset($_SESSION['perfil']) || !in_array($_SESSION['perfil'], ['medico','enfermeiro'])){
+    $_SESSION['msg_erro'] = "Acesso negado.";
+    header('Location: ../views/dashboard.php');
     exit;
 }
 
+$perfil = $_SESSION['perfil'];
 include '../../models/Paciente.php';
 include '../../models/Prontuario.php';
 include '../../config.php';
@@ -13,13 +15,6 @@ $pacientes = Paciente::listar();
 $medico_id_logado = $_SESSION['id_usuario'] ?? null;
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Prontuário Eletrônico - SGH</title>
-</head>
-<body>
 <h2>Prontuário Eletrônico</h2>
 
 <!-- Mensagens -->
@@ -33,7 +28,8 @@ $medico_id_logado = $_SESSION['id_usuario'] ?? null;
     <?php unset($_SESSION['msg_erro']); ?>
 <?php endif; ?>
 
-<!-- Seleção de Paciente -->
+<?php if($perfil == 'medico'): ?>
+<!-- Formulários de registro disponíveis apenas para médico -->
 <div>
     <label><strong>Selecionar Paciente:</strong></label>
     <select id="selectPaciente" required>
@@ -44,7 +40,6 @@ $medico_id_logado = $_SESSION['id_usuario'] ?? null;
     </select>
 </div>
 
-<!-- Formulários de registro -->
 <?php
 $acoes = [
     'evolucao' => 'Registrar Evolução',
@@ -79,8 +74,9 @@ foreach($acoes as $acao => $label):
 <?php endforeach; ?>
 
 <hr>
+<?php endif; ?>
 
-<!-- Histórico -->
+<!-- Histórico completo (disponível para todos) -->
 <div>
 <h3>Histórico Completo</h3>
 <?php foreach($pacientes as $p): ?>
@@ -98,7 +94,7 @@ foreach($acoes as $acao => $label):
                     <strong><?= date('d/m/Y H:i', strtotime($e['data'])) ?></strong> - 
                     Dr(a). <?= htmlspecialchars($e['medico_nome']) ?>: 
                     <?= htmlspecialchars($e['descricao']) ?>
-                    <?php if($e['medico_id'] == $medico_id_logado): ?>
+                    <?php if($perfil=='medico' && $e['medico_id'] == $medico_id_logado): ?>
                         <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
                             <input type="hidden" name="acao" value="excluir_evolucao">
                             <input type="hidden" name="id" value="<?= $e['id'] ?>">
@@ -120,7 +116,7 @@ foreach($acoes as $acao => $label):
                     <strong><?= date('d/m/Y H:i', strtotime($pr['data'])) ?></strong> - 
                     Dr(a). <?= htmlspecialchars($pr['medico_nome']) ?>: 
                     <?= htmlspecialchars($pr['descricao']) ?>
-                    <?php if($pr['medico_id'] == $medico_id_logado): ?>
+                    <?php if($perfil=='medico' && $pr['medico_id'] == $medico_id_logado): ?>
                         <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
                             <input type="hidden" name="acao" value="excluir_prescricao">
                             <input type="hidden" name="id" value="<?= $pr['id'] ?>">
@@ -142,7 +138,7 @@ foreach($acoes as $acao => $label):
                     <strong><?= date('d/m/Y H:i', strtotime($prc['data'])) ?></strong> - 
                     Dr(a). <?= htmlspecialchars($prc['medico_nome']) ?>: 
                     <?= htmlspecialchars($prc['descricao']) ?>
-                    <?php if($prc['medico_id'] == $medico_id_logado): ?>
+                    <?php if($perfil=='medico' && $prc['medico_id'] == $medico_id_logado): ?>
                         <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
                             <input type="hidden" name="acao" value="excluir_procedimento">
                             <input type="hidden" name="id" value="<?= $prc['id'] ?>">
@@ -164,7 +160,7 @@ foreach($acoes as $acao => $label):
                     <strong><?= date('d/m/Y H:i', strtotime($ex['data'])) ?></strong> - 
                     Dr(a). <?= htmlspecialchars($ex['medico_nome']) ?>: 
                     <?= htmlspecialchars($ex['exame_nome']) ?>
-                    <?php if($ex['medico_id'] == $medico_id_logado): ?>
+                    <?php if($perfil=='medico' && $ex['medico_id'] == $medico_id_logado): ?>
                         <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
                             <input type="hidden" name="acao" value="excluir_exame">
                             <input type="hidden" name="id" value="<?= $ex['id'] ?>">
@@ -182,6 +178,7 @@ foreach($acoes as $acao => $label):
 
 <a href="../dashboard.php"><button>Voltar ao Dashboard</button></a>
 
+<?php if($perfil=='medico'): ?>
 <script>
 const selectPaciente = document.getElementById('selectPaciente');
 const forms = document.querySelectorAll('.form-prontuario');
@@ -197,5 +194,4 @@ function atualizarPacienteHidden() {
 atualizarPacienteHidden();
 selectPaciente.addEventListener('change', atualizarPacienteHidden);
 </script>
-</body>
-</html>
+<?php endif; ?>

@@ -1,34 +1,47 @@
 <?php
-include __DIR__ . '/../config.php';
+// Verifica se a classe já foi definida
+if (!class_exists('Notificacao')) {
+    
+    include_once __DIR__ . '/../config.php';
 
-class Notificacao {
+    class Notificacao {
 
-    // Cria a notificação com mensagem já formatada
-    public static function criar($tipo, $mensagem, $usuario_id){
-        global $pdo;
+        // Criar notificação
+        public static function criar($tipo, $mensagem, $usuario_id){
+            global $pdo;
+            $stmt = $pdo->prepare("INSERT INTO notificacoes (tipo, mensagem, usuario_id) VALUES (?, ?, ?)");
+            return $stmt->execute([$tipo, $mensagem, $usuario_id]);
+        }
 
-        // Evitar SQL injection usando prepare
-        $stmt = $pdo->prepare("INSERT INTO notificacoes(tipo, mensagem, usuario_id) VALUES(?, ?, ?)");
-        $stmt->execute([$tipo, $mensagem, $usuario_id]);
-    }
+        // Listar notificações
+        public static function listarPorUsuario($usuario_id){
+            global $pdo;
+            $stmt = $pdo->prepare("
+                SELECT n.*, u.nome AS usuario_nome
+                FROM notificacoes n
+                LEFT JOIN usuarios u ON n.usuario_id = u.id
+                WHERE n.usuario_id = ?
+                ORDER BY n.data DESC
+            ");
+            $stmt->execute([$usuario_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
-    // Lista notificações de um usuário com nome incluso (caso queira exibir)
-    public static function listarPorUsuario($usuario_id){
-        global $pdo;
-        return $pdo->query("
-            SELECT n.*, u.nome AS usuario_nome
-            FROM notificacoes n
-            LEFT JOIN usuarios u ON n.usuario_id = u.id
-            WHERE n.usuario_id = $usuario_id
-            ORDER BY n.data_criacao DESC
-        ")->fetchAll(PDO::FETCH_ASSOC);
-    }
+        // Marcar como lida
+        public static function marcarComoLida($id){
+            global $pdo;
+            $stmt = $pdo->prepare("UPDATE notificacoes SET lida = 1 WHERE id = ?");
+            $stmt->execute([$id]);
+        }
 
-    // Marca uma notificação como lida
-    public static function marcarComoLida($id){
-        global $pdo;
-        $stmt = $pdo->prepare("UPDATE notificacoes SET lida=1 WHERE id=?");
-        $stmt->execute([$id]);
+        // Contador de não lidas
+        public static function contarNaoLidas($usuario_id){
+            global $pdo;
+            $stmt = $pdo->prepare("SELECT COUNT(*) AS total FROM notificacoes WHERE usuario_id = ? AND lida = 0");
+            $stmt->execute([$usuario_id]);
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $res['total'];
+        }
     }
 }
 ?>

@@ -5,47 +5,75 @@ if (!isset($_SESSION['id_usuario'])) {
     exit;
 }
 
+include '../models/Notificacao.php';
+
 $nome   = $_SESSION['nome'];
 $perfil = $_SESSION['perfil'];
+$usuario_id = $_SESSION['id_usuario'];
+
+// Contar notificações não lidas
+$nao_lidas = Notificacao::contarNaoLidas($usuario_id);
 ?>
 
-<h2>Bem-vindo, <?= htmlspecialchars($nome) ?> (<?= ucfirst($perfil) ?>)</h2>
-<p>Escolha uma opção do menu abaixo:</p>
-
-<ul>
-    <?php if($perfil == 'administrador'): ?>
-        <li><a href="paciente/cadastro.php">Cadastrar Pacientes</a></li>
-        <li><a href="consulta/agendar.php">Gerenciar Consultas</a></li>
-        <li><a href="internacao/internar.php">Internações</a></li>
-        <li><a href="internacao/alta_transferencia.php">Alta / Transferência</a></li>
-        <li><a href="farmacia/farmacia.php">Farmácia</a></li>
-        <li><a href="notificacao/listar.php">Notificações</a></li>
-        <li><a href="calendario/calendario.php">Calendário</a></li>
-        <li><a href="relatorios/relatorios.php">Relatórios</a></li>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - SGH</title>
+</head>
+<body>
+    <h2>Bem-vindo, <?= htmlspecialchars($nome) ?> (<?= ucfirst($perfil) ?>)</h2>
+    
+    <!-- Contador de notificações -->
+    <?php if($nao_lidas > 0): ?>
+        <div style="background: #ffcc00; color: #333; padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center;">
+            🔔 Você tem <strong><?= $nao_lidas ?></strong> notificação<?= $nao_lidas != 1 ? 'es' : '' ?> não lida<?= $nao_lidas != 1 ? 's' : '' ?>.
+            <a href="notificacao/listar.php" style="margin-left: 10px; color: #0066cc; font-weight: bold;">Ver notificações</a>
+        </div>
     <?php endif; ?>
 
-    <?php if($perfil == 'medico'): ?>
-        <li><a href="consulta/agendar.php">Marcar Consulta</a></li>
-        <li><a href="prontuario/prontuario.php">Prontuário Eletrônico</a></li>
-        <li><a href="internacao/internacao.php">Internar Paciente</a></li>
-        <li><a href="notificacao/listar.php">Notificações</a></li>
-        <li><a href="calendario/calendario.php">Calendário</a></li>
+    <p>Escolha uma opção do menu abaixo:</p>
+
+    <!-- Mensagens -->
+    <?php if(!empty($_SESSION['msg_sucesso'])): ?>
+        <div style="color:green; padding: 10px; border: 1px solid green; margin: 10px 0;">
+            <?= htmlspecialchars($_SESSION['msg_sucesso']) ?>
+        </div>
+        <?php unset($_SESSION['msg_sucesso']); ?>
     <?php endif; ?>
 
-    <?php if($perfil == 'enfermeiro'): ?>
-        <li><a href="internacao/internar.php">Internar Paciente</a></li>
-        <li><a href="internacao/alta_transferencia.php">Alta / Transferência</a></li>
-        <li><a href="prontuario/prontuario.php">Registrar Procedimentos</a></li>
-        <li><a href="notificacao/listar.php">Notificações</a></li>
-        <li><a href="calendario/calendario.php">Calendário</a></li>
+    <?php if(!empty($_SESSION['msg_erro'])): ?>
+        <div style="color:red; padding: 10px; border: 1px solid red; margin: 10px 0;">
+            <?= htmlspecialchars($_SESSION['msg_erro']) ?>
+        </div>
+        <?php unset($_SESSION['msg_erro']); ?>
     <?php endif; ?>
 
-    <?php if($perfil == 'paciente'): ?>
-        <li><a href="consulta/agendar.php">Agendar Consulta</a></li>
-        <li><a href="consulta/historico.php">Histórico de Consultas</a></li>
-        <li><a href="notificacao/listar.php">Notificações</a></li>
-        <li><a href="calendario/calendario.php">Calendário</a></li>
-    <?php endif; ?>
-</ul>
+    <ul>
+        <?php if($perfil == 'medico'): ?>
+            <li><a href="consulta/consultas_medico.php">📋 Gerenciar Minhas Consultas</a></li>
+            <li><a href="consulta/agendar.php">➕ Agendar Consulta para Paciente</a></li>
+            <li><a href="prontuario/prontuario.php">📄 Prontuário Eletrônico</a></li>
+            <li><a href="internacao/internacao.php">🏥 Internar Paciente</a></li>
+            <li><a href="notificacao/listar.php">🔔 Notificações (<?= $nao_lidas ?>)</a></li>
+            <li><a href="calendario/calendario.php">📅 Calendário</a></li>
+        <?php endif; ?>
 
-<p><a href="../logout.php">Sair</a></p>
+        <?php if($perfil == 'enfermeiro'): ?>
+            <li><a href="internacao/internacao.php">🏥 Internar Paciente</a></li>
+            <li><a href="prontuario/prontuario.php">📄 Prontuário Eletrônico</a></li>
+            <li><a href="farmacia/farmacia.php">💊 Farmácia</a></li>
+        <?php endif; ?>
+
+        <?php if($perfil == 'paciente'): ?>
+            <li><a href="consulta/agendar.php">📅 Agendar Consulta</a></li>
+            <li><a href="consulta/historico.php">📊 Histórico de Consultas</a></li>
+            <li><a href="notificacao/listar.php">🔔 Notificações (<?= $nao_lidas ?>)</a></li>
+            <li><a href="calendario/calendario.php">📅 Calendário</a></li>
+        <?php endif; ?>
+
+    </ul>
+
+    <p><a href="../logout.php">🚪 Sair</a></p>
+</body>
+</html>
