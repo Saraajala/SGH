@@ -77,3 +77,4 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
     <p><a href="../logout.php">🚪 Sair</a></p>
 </body>
 </html>
+

@@ -1,0 +1,279 @@
+/* estilo.css */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.login-wrapper {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Metade da tela para cada lado */
+.login-brand {
+    flex: 1;  
+    background: linear-gradient(135deg, #b9dbe2 0%, #8BCAD9 50%, #4b9dad 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-brand::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm0 0c0 5.5 4.5 10 10 10s10-4.5 10-10-4.5-10-10-10-10 4.5-10 10z'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.brand-content {
+    text-align: center;
+    color: white;
+    z-index: 2;
+    position: relative;
+    max-width: 400px;
+}
+
+.brand-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 40px;
+    backdrop-filter: blur(10px);
+    animation: logoFloat 6s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.brand-logo svg {
+    width: 60px;
+    height: 60px;
+}
+
+.brand-content h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.brand-content p {
+    font-size: 18px;
+    opacity: 0.9;
+    font-weight: bold;
+    line-height: 1.6;
+    max-width: 400px;
+}
+
+/* Lado direito - Formulário */
+.register-form-section {
+    flex: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+}
+
+.register-form-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.form-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 12px;
+}
+
+.form-header p {
+    font-size: 16px;
+    color: #718096;
+}
+
+.register-form {
+    width: 100%;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.form-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4b9dad, #8BCAD9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
+
+.form-header p {
+    font-size: 16px;
+    color: #718096;
+}
+
+/* Campos do formulário */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.input-container {
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 15px;
+    background: #f7fafc;
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #4b9dad;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(75, 157, 173, 0.1);
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container i {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: #4b9dad;
+  font-size: 16px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 16px 20px 16px 42px; /* espaço extra pro ícone */
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 15px;
+  background: #f7fafc;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: #4b9dad;
+  background: #fff;
+}
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #4b9dad 0%, #8BCAD9 100%);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* espaço entre ícone e texto */
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #3b8b9d 0%, #74b8c9 100%);
+}
+
+
+/* Responsivo - empilha em telas menores */
+@media (max-width: 900px) {
+    .login-wrapper {
+        flex-direction: column;
+    }
+    .login-brand, .register-form-section {
+        flex: none;
+        width: 100%;
+        min-height: 50vh;
+        padding: 30px;
+    }
+    .brand-content h1 {
+        font-size: 32px;
+    }
+    .brand-content p {
+        font-size: 16px;
+    }
+    .brand-logo {
+        width: 80px;
+        height: 80px;
+    }
+    .brand-logo svg {
+        width: 40px;
+        height: 40px;
+    }
+}
+option {
+  color: #718096;             /* cor do texto */
+  background-color: #f8fafc;  /* fundo das opções */
+  padding: 10px 15px;         /* espaçamento interno */
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;  /* efeito suave */
+}
+
+/* Hover - efeito quando passa o mouse */
+option:hover {
+  background-color: #e2e8f0; /* tom mais claro */
+  color: #2d3748;             /* texto mais escuro */
+}
+
+/* Seleção */
+option:checked {
+  background-color: #02857e;  /* destaque da opção selecionada */
+  color: #fff;                /* texto branco */
+}

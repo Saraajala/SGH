@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Lumière - Cuidando de Você</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Itim&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Prociono&family=Viga&display=swap');
+
+        /* Reset e configurações básicas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9fafb;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Cores personalizadas */
+        :root {
+            --teal-custom: #4b9dad;
+            --teal-dark: #0f8b89;
+            --teal-light: linear-gradient(135deg, #b9dbe2, #8BCAD9, #4b9dad);
+            --teal-lighter:linear-gradient(135deg, #b9dbe2, #8BCAD9, #4b9dad);
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav {
+            padding: 16px 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .nav-links {
+            display: none;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        .nav-link {
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--teal-custom);
+        }
+
+        .btn-primary {
+            background: var(--teal-custom);
+            color: white;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--teal-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4b9dad, #85c9da, #bddde4);
+            color: white;
+            padding: 80px 0;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-content {
+                flex-direction: row;
+            }
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 60px;
+            }
+        }
+
+        .hero-highlight {
+            color: var(--teal-lighter);
+        }
+
+        .hero-description {
+            font-size: 20px;
+            color: var(--teal-lighter);
+            margin-bottom: 32px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .hero-buttons {
+                flex-direction: row;
+            }
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--teal-dark);
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--teal-dark);
+        }
+
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-circle {
+            width: 320px;
+            height: 320px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-icon {
+            width: 192px;
+            height: 192px;
+            color: white;
+        }
+
+        /* Seções gerais */
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+        }
+
+        .section-description {
+            font-size: 20px;
+            color: var(--gray-600);
+            max-width: 512px;
+            margin: 0 auto;
+        }
+
+        /* Serviços */
+        .services {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .services-grid {
+            display: grid;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .services-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .service-card {
+            background: rgba(129, 230, 217, 0.3);
+            padding: 32px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .service-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        .service-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+        }
+
+        .service-description {
+            color: var(--gray-600);
+        }
+
+        /* Especialidades */
+        .specialties {
+            padding: 80px 0;
+            background: var(--gray-50);
+        }
+
+        .specialties-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .specialties-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .specialties-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .specialty-card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .specialty-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .specialty-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .specialty-description {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        /* Estatísticas */
+        .stats {
+            padding: 80px 0;
+            background: var(--teal-custom);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 32px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--teal-lighter);
+        }
+
+        /* Contato */
+        .contact {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .contact-content {
+            display: grid;
+            gap: 48px;
+        }
+
+        @media (min-width: 1024px) {
+            .contact-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .contact-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        .contact-text {
+            color: var(--gray-600);
+        }
+
+        .contact-form-container {
+            background: var(--gray-50);
+            padding: 32px;
+            border-radius: 12px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 24px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: var(--gray-700);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--teal-custom);
+            box-shadow: 0 0 0 3px rgba(79, 209, 199, 0.1);
+        }
+
+        .form-submit {
+            background: var(--teal-custom);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-submit:hover {
+            background: var(--teal-dark);
+        }
+
+        .form-disclaimer {
+            font-size: 14px;
+            color: var(--gray-400);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .demo-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            background:#016161;
+            color: white;
+            padding: 48px 0;
+        }
+
+        .footer-content {
+            display: grid;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .footer-logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .footer-description {
+            color: rgb(255, 255, 255);
+        }
+
+        .footer-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-list li {
+            color: rgb(255, 255, 255);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-700);
+            margin-top: 32px;
+            padding-top: 32px;
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+
+        /* Responsividade adicional */
+        @media (max-width: 767px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .hero-description {
+                font-size: 18px;
+            }
+            
+            .section-description {
+                font-size: 18px;
+            }
+        }
+
+        /* Animações suaves */
+        .service-card,
+        .specialty-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estados de loading para formulário */
+        .form-submit:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-input.success {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Estilos para modais */
+        .success-modal, .emergency-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            margin: 1rem;
+        }
+
+        .modal-content.emergency {
+            border-left: 4px solid #ef4444;
+        }
+
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .emergency-icon {
+            font-size: 48px;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--teal-custom);
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: var(--teal-lighter);
+            border-radius: 8px;
+        }
+
+        /* Botão voltar ao topo */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--teal-custom);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top:hover {
+            background: var(--teal-dark);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .hero-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: white;   /* se quiser manter o fundo redondo */
+    width: 350px;        /* ajuste conforme necessário */
+    height: 350px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.hero-logo {
+    border-radius: 200px;
+    max-width: 100%;   /* para não ultrapassar o círculo */
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.hero-circle2 {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff;      /* mantém o círculo de fundo */
+    width: 50px;          /* ajuste o tamanho do círculo */
+    height: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.hero-logo2 {
+    max-width: 60%;   /* antes 20% */
+    max-height: 60%;
+    object-fit: contain;
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <div class="hero-visual2">
+    <div class="hero-circle2">
+        <img src="logo.png" alt="Logo Hospital Vida Nova" class="hero-logo">
+    </div>
+
+    
+</div>
+                    <h1 class="logo-text">Clínica Lumière</h1>
+                </div>
+                
+                <a href="perfil.php"><button class="btn-primary">Meu perfil</button></a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2 class="hero-title">
+                        Cuidando da sua saúde com 
+                        <span class="hero-highlight">excelência</span>
+                    </h2>
+                    <p class="hero-description">
+                        Há mais de 30 anos oferecendo atendimento médico de qualidade, 
+                        com tecnologia de ponta e profissionais especializados.
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn-secondary">Agendar Consulta</button>
+                        <button class="btn-outline">Emergência 24h</button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+    <div class="hero-circle">
+        <img src="logo.png" alt="Logo Hospital Vida Nova" class="hero-logo">
+    </div>
+</div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Serviços -->
+    <section id="servicos" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h3 class="section-title">Nossos Serviços</h3>
+                <p class="section-description">
+                    Oferecemos uma ampla gama de serviços médicos com tecnologia avançada e atendimento humanizado
+                </p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Emergência 24h</h4>
+                    <p class="service-description">Atendimento de urgência e emergência disponível 24 horas por dia, 7 dias por semana.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Exames Diagnósticos</h4>
+                    <p class="service-description">Laboratório completo e exames de imagem com equipamentos de última geração.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Consultas Especializadas</h4>
+                    <p class="service-description">Mais de 20 especialidades médicas com profissionais altamente qualificados.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Cirurgias</h4>
+                    <p class="service-description">Centro cirúrgico moderno para procedimentos de baixa, média e alta complexidade.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a2 2 0 002 2h8a2 2 0 002-2V3a2 2 0 012 2v6h-3a2 2 0 100 4h3v1a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Internação</h4>
+                    <p class="service-description">Quartos confortáveis e UTI equipada para garantir o melhor cuidado aos pacientes.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h4 class="service-title">Check-up Preventivo</h4>
+                    <p class="service-description">Programas de prevenção e check-up completo para manter sua saúde em dia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Especialidades -->
+    <section id="especialidades" class="specialties">
+        <div class="container">
+            <div class="section-header">
+                <h3 class="section-title">Especialidades Médicas</h3>
+                <p class="section-description">
+                    Contamos com especialistas renomados em diversas áreas da medicina
+                </p>
+            </div>
+
+            <div class="specialties-grid">
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Cardiologia</h5>
+                    <p class="specialty-description">Cuidados especializados para o coração</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Neurologia</h5>
+                    <p class="specialty-description">Tratamento do sistema nervoso</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Ortopedia</h5>
+                    <p class="specialty-description">Cuidados com ossos e articulações</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Pediatria</h5>
+                    <p class="specialty-description">Saúde infantil especializada</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Ginecologia</h5>
+                    <p class="specialty-description">Saúde da mulher</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Oncologia</h5>
+                    <p class="specialty-description">Tratamento do câncer</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Dermatologia</h5>
+                    <p class="specialty-description">Cuidados com a pele</p>
+                </div>
+                <div class="specialty-card">
+                    <h5 class="specialty-title">Psiquiatria</h5>
+                    <p class="specialty-description">Saúde mental</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Números -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">Anos de Experiência</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50k+</div>
+                    <div class="stat-label">Pacientes Atendidos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">Profissionais</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Atendimento</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section id="contato" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h3 class="section-title">Entre em Contato</h3>
+                <p class="section-description">Estamos aqui para cuidar de você</p>
+            </div>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-title">Endereço</h4>
+                            <p class="contact-text">Rua da Saúde, 123<br>Centro - São Paulo, SP<br>CEP: 01234-567</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-title">Telefone</h4>
+                            <p class="contact-text">Central de Atendimento:<br>(11) 3456-7890<br>Emergência: (11) 9876-5432</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-title">E-mail</h4>
+                            <p class="contact-text">contato@hospitalvidanova.com.br<br>agendamento@hospitalvidanova.com.br</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-container">
+                    <h4 class="form-title">Agende sua Consulta</h4>
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" class="form-input" placeholder="Seu nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telefone</label>
+                            <input type="tel" class="form-input" placeholder="(11) 99999-9999" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Especialidade</label>
+                            <select class="form-input" required>
+                                <option value="">Selecione uma especialidade</option>
+                                <option value="cardiologia">Cardiologia</option>
+                                <option value="neurologia">Neurologia</option>
+                                <option value="ortopedia">Ortopedia</option>
+                                <option value="pediatria">Pediatria</option>
+                                <option value="ginecologia">Ginecologia</option>
+                                <option value="outras">Outras</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mensagem</label>
+                            <textarea rows="4" class="form-input" placeholder="Descreva brevemente o motivo da consulta"></textarea>
+                        </div>
+                        <button type="button" class="form-submit" onclick="window.location.href='agendamento.html'">Enviar Solicitação</button>
+                    </form>
+                    <p class="form-disclaimer">
+                        <span class="demo-badge">Demo</span> 
+                        Este formulário é apenas demonstrativo
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM10 18a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h3 class="footer-logo-text">Hospital Vida Nova</h3>
+                    </div>
+                    <p class="footer-description">Cuidando de você e sua família há mais de 30 anos com excelência e dedicação.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Serviços</h4>
+                    <ul class="footer-list">
+                        <li>Emergência 24h</li>
+                        <li>Consultas</li>
+                        <li>Exames</li>
+                        <li>Cirurgias</li>
+                        <li>Internação</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Especialidades</h4>
+                    <ul class="footer-list">
+                        <li>Cardiologia</li>
+                        <li>Neurologia</li>
+                        <li>Ortopedia</li>
+                        <li>Pediatria</li>
+                        <li>Ginecologia</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Contato</h4>
+                    <ul class="footer-list">
+                        <li>📍 Rua da Saúde, 123</li>
+                        <li>📞 (11) 3456-7890</li>
+                        <li>🚨 (11) 9876-5432</li>
+                        <li>✉️ contato@hospitalvidanova.com.br</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Hospital Vida Nova. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Configuração inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // Função principal de inicialização
+        function initializeApp() {
+            setupSmoothScrolling();
+            setupFormHandling();
+            setupButtonActions();
+            setupAnimations();
+            setupFormValidation();
+            setupPhoneMask();
+            addBackToTopButton();
+        }
+
+        // Smooth scrolling para links de navegação
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Manipulação do formulário de contato
+        function setupFormHandling() {
+            const form = document.getElementById('contactForm');
+            if (form) {
+                form.addEventListener('submit', handleFormSubmit);
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const submitButton = e.target.querySelector('.form-submit');
+            
+            // Simular loading
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+            
+            // Simular envio (em um projeto real, aqui seria a chamada para API)
+            setTimeout(() => {
+                showSuccessMessage();
+                resetForm(e.target);
+                
+                // Restaurar botão
+                submitButton.disabled = false;
+                submitButton.textContent = 'Enviar Solicitação';
+            }, 2000);
+        }
+
+        function showSuccessMessage() {
+            // Criar modal de sucesso
+            const modal = document.createElement('div');
+            modal.className = 'success-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="success-icon">✓</div>
+                    <h3>Solicitação Enviada!</h3>
+                    <p>Obrigado pelo seu interesse! Em breve entraremos em contato para agendar sua consulta.</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="btn-primary">Fechar</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function resetForm(form) {
+            form.reset();
+            // Remover classes de validação
+            form.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+        }
+
+        // Configurar ações dos botões
+        function setupButtonActions() {
+            // Botões de agendamento
+            document.querySelectorAll('button').forEach(button => {
+                if (button.textContent.includes('Agendar')) {
+                    button.addEventListener('click', function() {
+                        document.querySelector('#contato').scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    });
+                }
+                
+                if (button.textContent.includes('Emergência')) {
+                    button.addEventListener('click', function() {
+                        showEmergencyAlert();
+                    });
+                }
+            });
+        }
+
+        function showEmergencyAlert() {
+            const modal = document.createElement('div');
+            modal.className = 'emergency-modal';
+            modal.innerHTML = `
+                <div class="modal-content emergency">
+                    <div class="emergency-icon">🚨</div>
+                    <h3>Emergência 24h</h3>
+                    <p>Em caso de emergência, ligue imediatamente para:</p>
+                    <div class="emergency-number">(11) 9876-5432</div>
+                    <p>Ou dirija-se ao nosso pronto-socorro na Rua da Saúde, 123</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="btn-primary">Entendi</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        // Configurar animações
+        function setupAnimations() {
+            // Intersection Observer para animações ao scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observar cards de serviços e especialidades
+            document.querySelectorAll('.service-card, .specialty-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        }
+
+        // Validação de formulário em tempo real
+        function setupFormValidation() {
+            const inputs = document.querySelectorAll('.form-input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        validateField(this);
+                    }
+                });
+            });
+        }
+
+        function validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            
+            // Validação básica
+            if (field.hasAttribute('required') && !value) {
+                isValid = false;
+            }
+            
+            // Validação específica por tipo
+            if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = emailRegex.test(value);
+            }
+            
+            if (field.type === 'tel' && value) {
+                const phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+                isValid = phoneRegex.test(value);
+            }
+            
+            // Aplicar classes visuais
+            field.classList.remove('error', 'success');
+            if (value) {
+                field.classList.add(isValid ? 'success' : 'error');
+            }
+            
+            return isValid;
+        }
+
+        // Máscara para telefone
+        function setupPhoneMask() {
+            const phoneInput = document.querySelector('input[type="tel"]');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    
+                    if (value.length >= 11) {
+                        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                    } else if (value.length >= 7) {
+                        value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                    } else if (value.length >= 3) {
+                        value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+                    }
+                    
+                    e.target.value = value;
+                });
+            }
+        }
+
+        // Função para scroll suave ao topo
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Adicionar botão de voltar ao topo
+        function addBackToTopButton() {
+            const button = document.createElement('button');
+            button.innerHTML = '↑';
+            button.className = 'back-to-top';
+            button.onclick = scrollToTop;
+            
+            document.body.appendChild(button);
+            
+            // Mostrar/esconder baseado no scroll
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    button.classList.add('visible');
+                } else {
+                    button.classList.remove('visible');
+                }
+            });
+        }
+
+        // Efeitos visuais adicionais
+        function addVisualEffects() {
+            // Efeito parallax suave no hero
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const hero = document.querySelector('.hero');
+                if (hero) {
+                    hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+            });
+
+            // Contador animado para estatísticas
+            const stats = document.querySelectorAll('.stat-number');
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            });
+
+            stats.forEach(stat => {
+                statsObserver.observe(stat);
+            });
+        }
+
+        function animateCounter(element) {
+            const target = parseInt(element.textContent.replace(/\D/g, ''));
+            const suffix = element.textContent.replace(/\d/g, '');
+            let current = 0;
+            const increment = target / 50;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+            }, 40);
+        }
+
+        // Inicializar efeitos visuais quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(addVisualEffects, 1000);
+        });
+
+        // Função para melhorar a acessibilidade
+        function improveAccessibility() {
+            // Adicionar indicadores de foco visíveis
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    document.body.classList.add('keyboard-navigation');
+                }
+            });
+
+            document.addEventListener('mousedown', function() {
+                document.body.classList.remove('keyboard-navigation');
+            });
+
+            // Melhorar navegação por teclado
+            const focusableElements = document.querySelectorAll(
+                'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+
+            focusableElements.forEach(element => {
+                element.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && element.tagName === 'BUTTON') {
+                        element.click();
+                    }
+                });
+            });
+        }
+
+        // Inicializar melhorias de acessibilidade
+        document.addEventListener('DOMContentLoaded', function() {
+            improveAccessibility();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9722bbf7332f2912',t:'MTc1NTcwMTc1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+
+
+
+
+</html>

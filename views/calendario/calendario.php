@@ -38,7 +38,6 @@ if ($perfil === 'paciente') {
         $eventos[] = [
             'title' => 'Consulta com Dr(a). '.$c['medico'] . ' (' . ucfirst($c['status']) . ')',
             'start' => $c['data'].'T'.$c['hora'],
-            'color' => $cor,
             'hora' => $c['hora'],
             'medico' => $c['medico'],
             'status' => $c['status']
@@ -68,7 +67,6 @@ elseif ($perfil === 'medico') {
         $eventos[] = [
             'title' => 'Consulta - '.$c['paciente'] . ' (' . ucfirst($c['status']) . ')',
             'start' => $c['data'].'T'.$c['hora'],
-            'color' => $cor,
             'hora' => $c['hora'],
             'paciente' => $c['paciente'],
             'status' => $c['status']
