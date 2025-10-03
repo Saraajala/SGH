@@ -30,7 +30,7 @@ function formatarStatusQuarto($status) {
     <h1>Gestão de Internações</h1>
 
     <?php if($mensagem): ?>
-        <div style="padding:10px; margin:10px; border:1px solid #ccc;">
+        <div>
             <?= htmlspecialchars($mensagem) ?>
         </div>
     <?php endif; ?>
@@ -64,7 +64,7 @@ function formatarStatusQuarto($status) {
     <?php if(empty($internacoes)): ?>
         <p>Nenhum paciente internado no momento.</p>
     <?php else: ?>
-        <table border="1" cellpadding="5" cellspacing="0">
+        <table>
             <tr>
                 <th>Paciente</th>
                 <th>Médico</th>
@@ -81,12 +81,12 @@ function formatarStatusQuarto($status) {
                 <td><?= htmlspecialchars($internacao['quarto_numero']) ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($internacao['data_entrada'])) ?></td>
                 <td>
-                    <form method="POST" action="../../controllers/InternacaoController.php" style="display:inline;">
+                    <form method="POST" action="../../controllers/InternacaoController.php">
                         <input type="hidden" name="acao" value="dar_alta">
                         <input type="hidden" name="internacao_id" value="<?= $internacao['id'] ?>">
                         <button type="submit">Dar Alta</button>
                     </form>
-                    <form method="POST" action="../../controllers/InternacaoController.php" style="display:inline;">
+                    <form method="POST" action="../../controllers/InternacaoController.php">
                         <input type="hidden" name="acao" value="transferir">
                         <input type="hidden" name="internacao_id" value="<?= $internacao['id'] ?>">
                         <select name="novo_quarto_id" required>
@@ -108,7 +108,7 @@ function formatarStatusQuarto($status) {
     <?php endif; ?>
 
     <h2>Status dos Quartos</h2>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <table>
         <tr>
             <th>Ala</th>
             <th>Quarto</th>

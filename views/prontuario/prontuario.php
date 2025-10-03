@@ -19,12 +19,12 @@ $medico_id_logado = $_SESSION['id_usuario'] ?? null;
 
 <!-- Mensagens -->
 <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-    <div style="color:green;"><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
+    <div><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
     <?php unset($_SESSION['msg_sucesso']); ?>
 <?php endif; ?>
 
 <?php if(!empty($_SESSION['msg_erro'])): ?>
-    <div style="color:red;"><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
+    <div><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
     <?php unset($_SESSION['msg_erro']); ?>
 <?php endif; ?>
 
@@ -95,7 +95,7 @@ foreach($acoes as $acao => $label):
                     Dr(a). <?= htmlspecialchars($e['medico_nome']) ?>: 
                     <?= htmlspecialchars($e['descricao']) ?>
                     <?php if($perfil=='medico' && $e['medico_id'] == $medico_id_logado): ?>
-                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                        <form method="POST" action="../../controllers/ProntuarioController.php">
                             <input type="hidden" name="acao" value="excluir_evolucao">
                             <input type="hidden" name="id" value="<?= $e['id'] ?>">
                             <button type="submit" onclick="return confirm('Excluir evolução?')">Excluir</button>
@@ -117,7 +117,7 @@ foreach($acoes as $acao => $label):
                     Dr(a). <?= htmlspecialchars($pr['medico_nome']) ?>: 
                     <?= htmlspecialchars($pr['descricao']) ?>
                     <?php if($perfil=='medico' && $pr['medico_id'] == $medico_id_logado): ?>
-                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                        <form method="POST" action="../../controllers/ProntuarioController.php">
                             <input type="hidden" name="acao" value="excluir_prescricao">
                             <input type="hidden" name="id" value="<?= $pr['id'] ?>">
                             <button type="submit" onclick="return confirm('Excluir prescrição?')">Excluir</button>
@@ -139,7 +139,7 @@ foreach($acoes as $acao => $label):
                     Dr(a). <?= htmlspecialchars($prc['medico_nome']) ?>: 
                     <?= htmlspecialchars($prc['descricao']) ?>
                     <?php if($perfil=='medico' && $prc['medico_id'] == $medico_id_logado): ?>
-                        <form method="POST" action="../../controllers/ProntuarioController.php" style="display:inline;">
+                        <form method="POST" action="../../controllers/ProntuarioController.php">
                             <input type="hidden" name="acao" value="excluir_procedimento">
                             <input type="hidden" name="id" value="<?= $prc['id'] ?>">
                             <button type="submit" onclick="return confirm('Excluir procedimento?')">Excluir</button>

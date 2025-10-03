@@ -26,9 +26,9 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
     
     <!-- Contador de notificações -->
     <?php if($nao_lidas > 0): ?>
-        <div style="background: #ffcc00; color: #333; padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center;">
-            🔔 Você tem <strong><?= $nao_lidas ?></strong> notificação<?= $nao_lidas != 1 ? 'es' : '' ?> não lida<?= $nao_lidas != 1 ? 's' : '' ?>.
-            <a href="notificacao/listar.php" style="margin-left: 10px; color: #0066cc; font-weight: bold;">Ver notificações</a>
+        <div>
+             Você tem <strong><?= $nao_lidas ?></strong> notificação<?= $nao_lidas != 1 ? 'es' : '' ?> não lida<?= $nao_lidas != 1 ? 's' : '' ?>.
+            <a href="notificacao/listar.php">Ver notificações</a>
         </div>
     <?php endif; ?>
 
@@ -36,14 +36,14 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
 
     <!-- Mensagens -->
     <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-        <div style="color:green; padding: 10px; border: 1px solid green; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_sucesso']) ?>
         </div>
         <?php unset($_SESSION['msg_sucesso']); ?>
     <?php endif; ?>
 
     <?php if(!empty($_SESSION['msg_erro'])): ?>
-        <div style="color:red; padding: 10px; border: 1px solid red; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_erro']) ?>
         </div>
         <?php unset($_SESSION['msg_erro']); ?>
@@ -51,25 +51,25 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
 
     <ul>
         <?php if($perfil == 'medico'): ?>
-            <li><a href="consulta/consultas_medico.php">📋 Gerenciar Minhas Consultas</a></li>
-            <li><a href="consulta/agendar.php">➕ Agendar Consulta para Paciente</a></li>
-            <li><a href="prontuario/prontuario.php">📄 Prontuário Eletrônico</a></li>
-            <li><a href="internacao/internacao.php">🏥 Internar Paciente</a></li>
-            <li><a href="notificacao/listar.php">🔔 Notificações (<?= $nao_lidas ?>)</a></li>
-            <li><a href="calendario/calendario.php">📅 Calendário</a></li>
+            <li><a href="consulta/consultas_medico.php">Gerenciar Minhas Consultas</a></li>
+            <li><a href="consulta/agendar.php">Agendar Consulta para Paciente</a></li>
+            <li><a href="prontuario/prontuario.php">Prontuário Eletrônico</a></li>
+            <li><a href="internacao/internacao.php">Internar Paciente</a></li>
+            <li><a href="notificacao/listar.php">Notificações (<?= $nao_lidas ?>)</a></li>
+            <li><a href="calendario/calendario.php">Calendário</a></li>
         <?php endif; ?>
 
         <?php if($perfil == 'enfermeiro'): ?>
-            <li><a href="internacao/internacao.php">🏥 Internar Paciente</a></li>
-            <li><a href="prontuario/prontuario.php">📄 Prontuário Eletrônico</a></li>
-            <li><a href="farmacia/farmacia.php">💊 Farmácia</a></li>
+            <li><a href="internacao/internacao.php">Internar Paciente</a></li>
+            <li><a href="prontuario/prontuario.php">Prontuário Eletrônico</a></li>
+            <li><a href="farmacia/farmacia.php">Farmácia</a></li>
         <?php endif; ?>
 
         <?php if($perfil == 'paciente'): ?>
-            <li><a href="consulta/agendar.php">📅 Agendar Consulta</a></li>
-            <li><a href="consulta/historico.php">📊 Histórico de Consultas</a></li>
-            <li><a href="notificacao/listar.php">🔔 Notificações (<?= $nao_lidas ?>)</a></li>
-            <li><a href="calendario/calendario.php">📅 Calendário</a></li>
+            <li><a href="consulta/agendar.php">Agendar Consulta</a></li>
+            <li><a href="consulta/historico.php">Histórico de Consultas</a></li>
+            <li><a href="notificacao/listar.php">Notificações (<?= $nao_lidas ?>)</a></li>
+            <li><a href="calendario/calendario.php">Calendário</a></li>
         <?php endif; ?>
 
     </ul>

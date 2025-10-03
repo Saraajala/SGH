@@ -17,21 +17,14 @@ $data_hoje = date('Y-m-d');
 <head>
     <meta charset="UTF-8">
     <title>Minhas Consultas Futuras</title>
-    <style>
-        .status-agendada { color: blue; font-weight: bold; }
-        .status-realizada { color: green; font-weight: bold; }
-        .status-cancelada { color: red; font-weight: bold; }
-        .status-nao_compareceu { color: orange; font-weight: bold; }
-        .consulta-hoje { background-color: #e8f5e8; }
-    </style>
 </head>
 <body>
     <h2>Minhas Consultas Futuras</h2>
 
     <?php if(count($consultas) > 0): ?>
-    <table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <table>
         <thead>
-            <tr style="background-color: #f2f2f2;">
+            <tr>
                 <th>ID</th>
                 <th>Data</th>
                 <th>Hora</th>
@@ -49,7 +42,7 @@ $data_hoje = date('Y-m-d');
                 <td>
                     <?= date("d/m/Y", strtotime($c['data'])) ?>
                     <?php if($eh_hoje): ?>
-                        <br><small style="color: green;">(Hoje)</small>
+                        <br><small>(Hoje)</small>
                     <?php endif; ?>
                 </td>
                 <td><?= substr($c['hora'], 0, 5) ?></td>

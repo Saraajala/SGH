@@ -16,29 +16,6 @@ $naoLidas = Notificacao::contarNaoLidas($_SESSION['id_usuario']);
 <head>
     <meta charset="UTF-8">
     <title>Notificações</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 20px; }
-        h2 { text-align: center; color: #333; }
-        .contador {
-            background: #ffcc00;
-            color: #333;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        }
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-        th { background: #4CAF50; color: white; }
-        tr:nth-child(even) { background: #f9f9f9; }
-        a.botao { background: #4CAF50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px; }
-        a.botao:hover { background: #45a049; }
-        .lida { color: green; font-weight: bold; }
-        .nao-lida { color: red; font-weight: bold; }
-    </style>
 </head>
 <body>
 
@@ -58,7 +35,7 @@ $naoLidas = Notificacao::contarNaoLidas($_SESSION['id_usuario']);
     </tr>
 
     <?php if (empty($notificacoes)): ?>
-        <tr><td colspan="5">Nenhuma notificação encontrada.</td></tr>
+        <tr><td>Nenhuma notificação encontrada.</td></tr>
     <?php else: ?>
         <?php foreach ($notificacoes as $n): ?>
             <tr>

@@ -31,10 +31,9 @@ if ($perfil === 'paciente') {
 
     foreach ($consultas as $c) {
         // Definir cor baseada no status
-        $cor = '#4CAF50'; // Verde para agendada
-        if ($c['status'] == 'realizada') $cor = '#008000'; // Verde escuro para realizada
-        if ($c['status'] == 'cancelada') $cor = '#f44336'; // Vermelho para cancelada
-        if ($c['status'] == 'nao_compareceu') $cor = '#ff9800'; // Laranja para não compareceu
+        if ($c['status'] == 'realizada'); // Verde escuro para realizada
+        if ($c['status'] == 'cancelada'); // Vermelho para cancelada
+        if ($c['status'] == 'nao_compareceu'); // Laranja para não compareceu
         
         $eventos[] = [
             'title' => 'Consulta com Dr(a). '.$c['medico'] . ' (' . ucfirst($c['status']) . ')',
@@ -62,11 +61,9 @@ elseif ($perfil === 'medico') {
     $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($consultas as $c) {
-        // Definir cor baseada no status
-        $cor = '#4CAF50'; // Verde para agendada
-        if ($c['status'] == 'realizada') $cor = '#008000'; // Verde escuro para realizada
-        if ($c['status'] == 'cancelada') $cor = '#f44336'; // Vermelho para cancelada
-        if ($c['status'] == 'nao_compareceu') $cor = '#ff9800'; // Laranja para não compareceu
+        if ($c['status'] == 'realizada'); 
+        if ($c['status'] == 'cancelada');
+        if ($c['status'] == 'nao_compareceu'); 
         
         $eventos[] = [
             'title' => 'Consulta - '.$c['paciente'] . ' (' . ucfirst($c['status']) . ')',
@@ -93,7 +90,6 @@ elseif ($perfil === 'medico') {
         $eventos[] = [
             'title' => 'Procedimento: '.$p['descricao'].' - '.$p['paciente'],
             'start' => $p['data'],
-            'color' => '#2196F3',
             'paciente' => $p['paciente']
         ];
     }
@@ -117,7 +113,6 @@ elseif ($perfil === 'enfermeiro') {
             'title' => 'Internação - '.$i['paciente'].' (Quarto '.$i['quarto'].')',
             'start' => $i['data_internacao'],
             'end'   => $i['data_alta'] ?: null,
-            'color' => '#FF9800',
             'paciente' => $i['paciente']
         ];
     }
@@ -136,36 +131,13 @@ $eventosJSON = json_encode($eventos);
     <!-- FullCalendar CSS/JS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        h2 { text-align: center; color: #333; }
-        #calendar { max-width: 90%; margin: 30px auto; background: #fff; padding: 15px;
-                    border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);}
-        .legend { text-align: center; margin-bottom: 20px; }
-        .legend span { margin: 0 8px; padding: 5px 10px; border-radius: 5px; color: white; font-size: 12px; }
-        .consulta { background: #4CAF50; }
-        .consulta-realizada { background: #008000; }
-        .consulta-cancelada { background: #f44336; }
-        .consulta-nao-compareceu { background: #ff9800; }
-        .procedimento { background: #2196F3; }
-        .internacao { background: #FF9800; }
-        .info-box { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin: 20px auto; 
-            max-width: 800px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-    </style>
 </head>
 <body>
 
 <h2>📅 Calendário Interativo</h2>
 
 <div class="info-box">
-    <h3 style="margin-top: 0; color: #333;">Informações do Calendário</h3>
+    <h3>Informações do Calendário</h3>
     <p><strong>⚠️ Consultas realizadas de dias anteriores não são exibidas.</strong></p>
     <p>Apenas consultas futuras e consultas realizadas <strong>hoje</strong> aparecem no calendário.</p>
 </div>
@@ -223,8 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<p style="text-align:center; margin-top: 30px;">
-    <a href="../dashboard.php" style="padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+<p >
+    <a href="../dashboard.php">
         ← Voltar ao Dashboard
     </a>
 </p>

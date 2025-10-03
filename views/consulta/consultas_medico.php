@@ -18,44 +18,20 @@ $data_hoje = date('Y-m-d');
 <head>
     <meta charset="UTF-8">
     <title>Minhas Consultas</title>
-    <style>
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin: 2px;
-            color: white;
-            font-size: 12px;
-        }
-        .btn-realizada { background-color: #4CAF50; }
-        .btn-cancelar { background-color: #f44336; }
-        .btn-nao-compareceu { background-color: #ff9800; }
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .status-agendada { color: blue; font-weight: bold; }
-        .status-realizada { color: green; font-weight: bold; }
-        .status-cancelada { color: red; font-weight: bold; }
-        .status-nao_compareceu { color: orange; font-weight: bold; }
-        .consulta-passada { background-color: #f9f9f9; }
-        .consulta-hoje { background-color: #e8f5e8; }
-    </style>
 </head>
 <body>
     <h2>Minhas Consultas Futuras</h2>
 
     <!-- Mensagens -->
     <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-        <div style="color:green; padding: 10px; border: 1px solid green; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_sucesso']) ?>
         </div>
         <?php unset($_SESSION['msg_sucesso']); ?>
     <?php endif; ?>
 
     <?php if(!empty($_SESSION['msg_erro'])): ?>
-        <div style="color:red; padding: 10px; border: 1px solid red; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_erro']) ?>
         </div>
         <?php unset($_SESSION['msg_erro']); ?>
@@ -66,7 +42,7 @@ $data_hoje = date('Y-m-d');
     <?php else: ?>
         <table border="1" width="100%" cellpadding="8" cellspacing="0">
             <thead>
-                <tr style="background-color: #f2f2f2;">
+                <tr>
                     <th>Data</th>
                     <th>Hora</th>
                     <th>Paciente</th>
@@ -83,7 +59,7 @@ $data_hoje = date('Y-m-d');
                     <td>
                         <?= date('d/m/Y', strtotime($consulta['data'])) ?>
                         <?php if($eh_hoje): ?>
-                            <br><small style="color: green;">(Hoje)</small>
+                            <br><small>(Hoje)</small>
                         <?php endif; ?>
                     </td>
                     <td><?= substr($consulta['hora'], 0, 5) ?></td>
@@ -96,29 +72,29 @@ $data_hoje = date('Y-m-d');
                     <td>
                         <?php if($consulta['status'] == 'agendada' && $eh_hoje): ?>
                             <!-- Botões só aparecem no dia da consulta -->
-                            <form method="POST" action="../../controllers/ConsultaController.php" style="display: inline;">
+                            <form method="POST" action="../../controllers/ConsultaController.php">
                                 <input type="hidden" name="acao" value="marcar_realizada">
                                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
                                 <button type="submit" class="btn btn-realizada">✓ Realizada</button>
                             </form>
                             
-                            <form method="POST" action="../../controllers/ConsultaController.php" style="display: inline;">
+                            <form method="POST" action="../../controllers/ConsultaController.php">
                                 <input type="hidden" name="acao" value="cancelar">
                                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
                                 <button type="submit" class="btn btn-cancelar">✗ Cancelar</button>
                             </form>
                             
-                            <form method="POST" action="../../controllers/ConsultaController.php" style="display: inline;">
+                            <form method="POST" action="../../controllers/ConsultaController.php">
                                 <input type="hidden" name="acao" value="nao_compareceu">
                                 <input type="hidden" name="consulta_id" value="<?= $consulta['id'] ?>">
                                 <button type="submit" class="btn btn-nao-compareceu">⚠ Não Compareceu</button>
                             </form>
                         <?php elseif($consulta['status'] == 'agendada' && !$eh_hoje): ?>
-                            <span style="color: #666;">
+                            <span>
                                 Botões disponíveis no dia <?= date('d/m/Y', strtotime($consulta['data'])) ?>
                             </span>
                         <?php else: ?>
-                            <span style="color: #666;">Consulta <?= $consulta['status'] ?></span>
+                            <span>Consulta <?= $consulta['status'] ?></span>
                         <?php endif; ?>
                     </td>
                 </tr>

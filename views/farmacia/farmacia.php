@@ -18,12 +18,12 @@ $dispensacoes = Farmacia::listarDispensacoes();
 
 <!-- Mensagens -->
 <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-    <div style="color:green;"><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
+    <div><?= htmlspecialchars($_SESSION['msg_sucesso']) ?></div>
     <?php unset($_SESSION['msg_sucesso']); ?>
 <?php endif; ?>
 
 <?php if(!empty($_SESSION['msg_erro'])): ?>
-    <div style="color:red;"><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
+    <div><?= htmlspecialchars($_SESSION['msg_erro']) ?></div>
     <?php unset($_SESSION['msg_erro']); ?>
 <?php endif; ?>
 
@@ -62,7 +62,7 @@ $dispensacoes = Farmacia::listarDispensacoes();
 
 
 <h3>Saídas de Medicamentos</h3>
-<table border="1" width="100%">
+<table>
     <thead>
         <tr>
             <th>Data</th>
@@ -75,7 +75,7 @@ $dispensacoes = Farmacia::listarDispensacoes();
     <tbody>
         <?php if(empty($dispensacoes)): ?>
             <tr>
-                <td colspan="5" align="center">Nenhuma dispensação registrada</td>
+                <td>Nenhuma dispensação registrada</td>
             </tr>
         <?php else: ?>
             <?php foreach($dispensacoes as $dispensa): ?>

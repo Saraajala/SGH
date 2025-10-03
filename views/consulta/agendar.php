@@ -28,14 +28,14 @@ if($perfil == 'paciente'){
 
     <!-- Mensagens -->
     <?php if(!empty($_SESSION['msg_sucesso'])): ?>
-        <div style="color:green; padding: 10px; border: 1px solid green; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_sucesso']) ?>
         </div>
         <?php unset($_SESSION['msg_sucesso']); ?>
     <?php endif; ?>
 
     <?php if(!empty($_SESSION['msg_erro'])): ?>
-        <div style="color:red; padding: 10px; border: 1px solid red; margin: 10px 0;">
+        <div>
             <?= htmlspecialchars($_SESSION['msg_erro']) ?>
         </div>
         <?php unset($_SESSION['msg_erro']); ?>

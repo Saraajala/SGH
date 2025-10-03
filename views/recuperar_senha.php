@@ -39,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <h2>Recuperar Senha</h2>
 
 <?php if ($erro): ?>
-<p style="color:red;"><?= $erro ?></p>
+<p><?= $erro ?></p>
 <?php endif; ?>
 
 <?php if ($sucesso): ?>
-<p style="color:green;"><?= $sucesso ?></p>
+<p><?= $sucesso ?></p>
 <?php endif; ?>
 
 <?php if ($etapa == 1 && !$sucesso): ?>
