@@ -9,14 +9,19 @@ include '../../config.php';
 
 $id_usuario = $_SESSION['id_usuario'];
 $perfil     = $_SESSION['perfil'];
-$data_hoje = date('Y-m-d');
+$data_hoje  = date('Y-m-d');
 
-/* =======================================
-   1) Buscar todos os eventos do usuário
-   ======================================= */
+/* Pegar dados do usuário logado */
+$stmt = $pdo->prepare("SELECT nome FROM usuarios WHERE id = ?");
+$stmt->execute([$id_usuario]);
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+$nome_usuario = $usuario['nome'] ?? 'Usuário';
+$tratamento = ($perfil == 'medico') ? 'Dr(a).' : '';
+
+/* Buscar todos os eventos do usuário */
 $eventos = [];
 
-/* --- PACIENTE --- */
+/* Paciente */
 if ($perfil === 'paciente') {
     $sql = "SELECT c.id, c.data, c.hora, u.nome AS medico, c.status
             FROM consultas c
@@ -30,24 +35,19 @@ if ($perfil === 'paciente') {
     $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($consultas as $c) {
-        // Definir cor baseada no status
-        if ($c['status'] == 'realizada'); // Verde escuro para realizada
-        if ($c['status'] == 'cancelada'); // Vermelho para cancelada
-        if ($c['status'] == 'nao_compareceu'); // Laranja para não compareceu
-        
         $eventos[] = [
             'title' => 'Consulta com Dr(a). '.$c['medico'] . ' (' . ucfirst($c['status']) . ')',
             'start' => $c['data'].'T'.$c['hora'],
             'hora' => $c['hora'],
             'medico' => $c['medico'],
-            'status' => $c['status']
+            'status' => $c['status'],
+            'tipo' => 'consulta'
         ];
     }
 }
 
-/* --- MÉDICO --- */
+/* Médico */
 elseif ($perfil === 'medico') {
-    // Consultas (apenas futuras e realizadas do dia atual)
     $sql = "SELECT c.id, c.data, c.hora, u.nome AS paciente, c.status
             FROM consultas c
             JOIN usuarios u ON c.paciente_id = u.id
@@ -60,20 +60,16 @@ elseif ($perfil === 'medico') {
     $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($consultas as $c) {
-        if ($c['status'] == 'realizada'); 
-        if ($c['status'] == 'cancelada');
-        if ($c['status'] == 'nao_compareceu'); 
-        
         $eventos[] = [
             'title' => 'Consulta - '.$c['paciente'] . ' (' . ucfirst($c['status']) . ')',
             'start' => $c['data'].'T'.$c['hora'],
             'hora' => $c['hora'],
             'paciente' => $c['paciente'],
-            'status' => $c['status']
+            'status' => $c['status'],
+            'tipo' => 'consulta'
         ];
     }
 
-    // Procedimentos (apenas futuros)
     $sql = "SELECT pr.id, pr.data, pr.descricao, u.nome AS paciente
             FROM procedimentos pr
             JOIN usuarios u ON pr.paciente_id = u.id
@@ -88,14 +84,14 @@ elseif ($perfil === 'medico') {
         $eventos[] = [
             'title' => 'Procedimento: '.$p['descricao'].' - '.$p['paciente'],
             'start' => $p['data'],
-            'paciente' => $p['paciente']
+            'paciente' => $p['paciente'],
+            'tipo' => 'procedimento'
         ];
     }
 }
 
-/* --- ENFERMEIRO --- */
+/* Enfermeiro */
 elseif ($perfil === 'enfermeiro') {
-    // Internações (apenas futuras e atuais)
     $sql = "SELECT i.data_internacao, i.data_alta, u.nome AS paciente, q.numero AS quarto
             FROM internacoes i
             JOIN usuarios u ON i.paciente_id = u.id
@@ -111,28 +107,128 @@ elseif ($perfil === 'enfermeiro') {
             'title' => 'Internação - '.$i['paciente'].' (Quarto '.$i['quarto'].')',
             'start' => $i['data_internacao'],
             'end'   => $i['data_alta'] ?: null,
-            'paciente' => $i['paciente']
+            'paciente' => $i['paciente'],
+            'tipo' => 'internacao'
         ];
     }
 }
 
-// Transformar em JSON
 $eventosJSON = json_encode($eventos);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Calendário Interativo</title>
+<meta charset="UTF-8">
+<title>Calendário Interativo</title>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<link rel="stylesheet" href="estilo.css">
+<link rel="icon" href="../favicon_round.png" type="image/png">
 
-    <!-- FullCalendar CSS/JS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-height:100vh; }
+
+/* Header */
+.header { background:white; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); position:sticky; top:0; z-index:50; }
+.nav { padding:16px 0; }
+.nav-container { display:flex; justify-content:space-between; align-items:center; }
+.logo { display:flex; align-items:center; gap:12px; }
+.logo-text { font-size:24px; font-weight:700; color:#1f2937; }
+.nav-links { display:none; gap:32px; }
+@media(min-width:768px){ .nav-links{ display:flex; } }
+.nav-link { color:#374151; text-decoration:none; transition:color 0.3s ease; }
+.nav-link:hover { color:#1b8aa6; }
+.btn-primary { background:#1b8aa6; color:white; padding:8px 24px; border:none; border-radius:8px; font-weight:500; cursor:pointer; transition:background-color 0.3s ease; }
+.btn-primary:hover { background:#166e87; }
+
+/* Título do calendário */
+.calendar-title { text-align:center; font-size:32px; font-weight:700; color:#1b8aa6; margin:32px 0 16px; }
+
+/* Caixa de informações */
+.info-box { max-width:900px; margin:0 auto 24px; padding:16px 24px; background:#e0f7fa; border-left:5px solid #1b8aa6; border-radius:8px; color:#074d59; }
+
+/* Legenda */
+.legend { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+.legend span { padding:6px 12px; border-radius:6px; font-size:14px; font-weight:500; color:white; }
+.legend .consulta { background:#1b8aa6; }
+.legend .consulta-realizada { background:#0c7183; }
+.legend .consulta-cancelada { background:#e53e3e; }
+.legend .consulta-nao-compareceu { background:#f59e0b; }
+.legend .procedimento { background:#66d9d9; }
+.legend .internacao { background:#f6d365; }
+
+/* Calendário */
+#calendar { max-width:1000px; margin:0 auto 48px; background:white; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); padding:20px; }
+
+/* Dias */
+.fc .fc-daygrid-day { border-radius:8px; transition:all 0.3s ease; }
+.fc .fc-daygrid-day:hover { background:rgba(27,138,166,0.05); transform:translateY(-2px); box-shadow:0 6px 20px rgba(27,138,166,0.1); }
+
+/* Dia atual */
+.fc .fc-day-today { background:linear-gradient(135deg, #66D9D9 0%, #8BCAD9 100%); color:white; }
+
+/* Eventos */
+.fc-event { border:none; border-radius:8px; padding:6px 8px; font-size:13px; font-weight:500; color:white; box-shadow:0 4px 15px rgba(27,138,166,0.3); cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease; }
+.fc-event:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(27,138,166,0.5); }
+
+/* Status e tipos */
+.fc-event[data-status="realizada"] { background:#0c7183; }
+.fc-event[data-status="cancelada"] { background:#e53e3e; }
+.fc-event[data-type="procedimento"] { background:#66d9d9; }
+.fc-event[data-type="internacao"] { background:#f6d365; }
+
+/* Cartão flutuante */
+.event-card { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%) scale(0); width:300px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:16px; z-index:999; transition:transform 0.3s ease, opacity 0.3s ease; opacity:0; font-family:'Inter',sans-serif; }
+.event-card.visible { transform:translate(-50%, -50%) scale(1); opacity:1; }
+.event-card .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.event-card .card-header h3 { font-size:18px; font-weight:600; color:#1b8aa6; }
+.event-card .card-header span { cursor:pointer; font-size:16px; color:#e53e3e; }
+.event-card .card-body p { margin:4px 0; font-size:14px; color:#374151; }
+
+/* Overlay escuro */
+#calendar-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:998; }
+#calendar-overlay.visible { display:block; }
+
+/* Footer (mantido simples) */
+.footer { background:#016161; color:white; padding:48px 0; }
+.footer-content { display:grid; gap:32px; }
+@media(min-width:768px){ .footer-content{ grid-template-columns:repeat(4,1fr); } }
+.footer-logo { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.footer-logo-icon { width:40px; height:40px; background:#1b8aa6; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.footer-logo-icon svg { width:24px; height:24px; color:white; }
+.footer-logo-text { font-size:20px; font-weight:700; }
+.footer-description { color:white; }
+.footer-title { font-size:18px; font-weight:600; margin-bottom:16px; }
+.footer-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.footer-list li { color:white; }
+.footer-bottom { border-top:1px solid #374151; margin-top:32px; padding-top:32px; text-align:center; color:white; }
+</style>
 </head>
 <body>
 
-<h2>📅 Calendário Interativo</h2>
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="../logo.png" alt="Logo Clínica Lumière" style="width:50px; height:50px; border-radius:50%;">
+                <h1 class="logo-text">Clínica Lumière</h1>
+            </div>
+            <div class="nav-links flex items-center gap-6">
+                <span class="text-gray-700">Bem-vindo, <?php echo $tratamento . ' ' . $nome_usuario; ?></span>
+                <a href="../dashboard.php" class="nav-link">Menu</a>
+                <a href="../index.php" class="btn-primary">Sair</a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<h2 class="calendar-title">📅 Calendário Interativo</h2>
 
 <div class="info-box">
     <h3>Informações do Calendário</h3>
@@ -151,53 +247,118 @@ $eventosJSON = json_encode($eventos);
 
 <div id="calendar"></div>
 
+<!-- Cartão flutuante do evento -->
+<div id="event-card" class="event-card">
+    <div class="card-header">
+        <h3 id="event-title"></h3>
+        <span id="close-card">✖</span>
+    </div>
+    <div class="card-body">
+        <p id="event-date"></p>
+        <p id="event-time"></p>
+        <p id="event-patient"></p>
+        <p id="event-doctor"></p>
+        <p id="event-status"></p>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM10 18a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="footer-logo-text">Lumière</h3>
+                </div>
+                <p class="footer-description">Cuidando de você e sua família há mais de 30 anos com excelência e dedicação.</p>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Serviços</h4>
+                <ul class="footer-list">
+                    <li>Consultas</li>
+                    <li>Procedimentos</li>
+                    <li>Internações</li>
+                    <li>Exames</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Contato</h4>
+                <ul class="footer-list">
+                    <li>📞 (11) 1234-5678</li>
+                    <li>✉️ contato@clinicalumiere.com</li>
+                    <li>📍 Rua Lumière, 123</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Redes Sociais</h4>
+                <ul class="footer-list">
+                    <li>Facebook</li>
+                    <li>Instagram</li>
+                    <li>LinkedIn</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2025 Clínica Lumière. Todos os direitos reservados.</div>
+    </div>
+</footer>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let eventos = <?php echo $eventosJSON; ?>; // Eventos vindos do PHP
-
+    let eventos = <?php echo $eventosJSON; ?>;
     let calendarEl = document.getElementById('calendar');
+    let eventCard = document.getElementById('event-card');
+
+    // Overlay para escurecer fundo
+    let overlay = document.createElement('div');
+    overlay.id = 'calendar-overlay';
+    document.body.appendChild(overlay);
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,timeGridDay' },
         events: eventos,
         eventClick: function(info) {
             let props = info.event.extendedProps;
-            let detalhes = "📌 " + info.event.title +
-                           "\n🗓️ " + info.event.start.toLocaleDateString('pt-BR');
-            if (props.hora) detalhes += "\n⏰ Hora: " + props.hora;
-            if (props.paciente) detalhes += "\n👤 Paciente: " + props.paciente;
-            if (props.medico) detalhes += "\n👨‍⚕️ Médico: " + props.medico;
-            if (props.status) detalhes += "\n📍 Status: " + props.status;
-            alert(detalhes);
+
+            document.getElementById('event-title').textContent = info.event.title;
+            document.getElementById('event-date').textContent = "🗓️ " + info.event.start.toLocaleDateString('pt-BR');
+            document.getElementById('event-time').textContent = props.hora ? "⏰ Hora: " + props.hora : "";
+            document.getElementById('event-patient').textContent = props.paciente ? "👤 Paciente: " + props.paciente : "";
+            document.getElementById('event-doctor').textContent = props.medico ? "👨‍⚕️ Médico: " + props.medico : "";
+            document.getElementById('event-status').textContent = props.status ? "📍 Status: " + props.status : "";
+
+            // Mostrar cartão e overlay
+            eventCard.classList.add('visible');
+            overlay.classList.add('visible');
         },
         eventContent: function(arg) {
-            // Personalizar o conteúdo do evento
-            let title = arg.event.title;
-            let timeEl = document.createElement('div');
-            timeEl.innerHTML = title;
-            timeEl.style.fontSize = '11px';
-            timeEl.style.padding = '2px';
-            
-            let arrayOfDomNodes = [timeEl];
-            return { domNodes: arrayOfDomNodes };
+            let div = document.createElement('div');
+            div.innerHTML = arg.event.title;
+            div.style.fontSize = '12px';
+            div.style.padding = '2px';
+            if(arg.event.extendedProps.status) div.setAttribute('data-status', arg.event.extendedProps.status);
+            if(arg.event.extendedProps.tipo) div.setAttribute('data-type', arg.event.extendedProps.tipo);
+            return { domNodes: [div] };
         }
     });
 
     calendar.render();
+
+    // Fechar cartão
+    document.getElementById('close-card').addEventListener('click', () => {
+        eventCard.classList.remove('visible');
+        overlay.classList.remove('visible');
+    });
+    overlay.addEventListener('click', () => {
+        eventCard.classList.remove('visible');
+        overlay.classList.remove('visible');
+    });
 });
 </script>
-
-<p >
-    <a href="../dashboard.php">
-        ← Voltar ao Dashboard
-    </a>
-</p>
-
 </body>
 </html>

@@ -22,24 +22,28 @@ if (isset($_POST['acao'])) {
         exit;
     }
 
-    if ($_POST['acao'] == 'login') {
-        $email = trim($_POST['email']);
-        $senha = $_POST['senha'];
+  if ($_POST['acao'] == 'login') {
+    $email = trim($_POST['email']);
+    $senha = $_POST['senha'];
 
-        $user = Usuario::login($email, $senha);
+    $user = Usuario::login($email, $senha);
 
-        if ($user) {
-            $_SESSION['id_usuario'] = $user['id'];
-            $_SESSION['perfil']     = $user['perfil'];
-            $_SESSION['nome']       = $user['nome'];
+    if ($user) {
+        $_SESSION['id_usuario'] = $user['id'];
+        $_SESSION['perfil']     = $user['perfil'];
+        $_SESSION['nome']       = $user['nome'];
 
-            header('Location: ../views/dashboard.php');
-            exit;
-        } else {
-            echo "Login inválido!";
-            exit;
-        }
+        header('Location: ../views/dashboard.php');
+        exit;
+    } else {
+        // Em vez de echo, vamos criar uma variável de sessão para a mensagem de erro
+        $_SESSION['erro_login'] = "Email ou senha incorretos!";
+        // Redireciona de volta para a página de login
+        header('Location: ../views/login.php');
+        exit;
     }
+}
+
 
 } else {
     echo "Ação inválida!";

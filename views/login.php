@@ -1,4 +1,11 @@
-
+<?php
+session_start();
+$erro_login = '';
+if (isset($_SESSION['erro_login'])) {
+    $erro_login = $_SESSION['erro_login'];
+    unset($_SESSION['erro_login']); // Limpa a mensagem para não aparecer sempre
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,12 +13,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumière - Login</title>
     <link rel="stylesheet" href="../estilo.css">
-<link rel="icon" href="favicon_round.png" type="image/png">
+    <link rel="icon" href="favicon_round.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Mensagem de erro */
+        .login-error {
+            background-color: #ffe6e6;
+            color: #d8000c;
+            border: 1px solid #d8000c;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-      <div class="login-wrapper">
+    <div class="login-wrapper">
         <!-- Esquerda - Branding -->
         <div class="login-brand">
             <div class="brand-content">
@@ -30,6 +57,13 @@
                     <h2>Bem-vindo de volta</h2>
                     <p>Faça login para acessar sua conta</p>
                 </div>
+
+                <!-- Mensagem de erro -->
+                <?php if ($erro_login): ?>
+                    <div class="login-error">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <?= $erro_login ?>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Formulário PHP funcional -->
                 <form class="login-form" method="POST" action="../controllers/UsuarioController.php">
@@ -70,7 +104,5 @@
             </div>
         </div>
     </div>
-</div>
-</div>
 </body>
 </html>
