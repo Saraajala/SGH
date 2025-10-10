@@ -21,14 +21,25 @@ $tratamento = ($perfil == 'medico') ? 'Dr(a).' : '';
 /* Buscar todos os eventos do usuário */
 $eventos = [];
 
+/* Função para gerar className dos status */
+function getStatusClass($status){
+    switch($status){
+        case 'agendada': return 'consulta';
+        case 'realizada': return 'consulta-realizada';
+        case 'cancelada': return 'consulta-cancelada';
+        case 'nao-compareceu': return 'consulta-nao-compareceu';
+        default: return '';
+    }
+}
+
 /* Paciente */
 if ($perfil === 'paciente') {
     $sql = "SELECT c.id, c.data, c.hora, u.nome AS medico, c.status
             FROM consultas c
             JOIN usuarios u ON c.medico_id = u.id
-            WHERE c.paciente_id = ? 
-            AND (c.status = 'agendada' OR (c.status = 'realizada' AND c.data = ?))
-            AND (c.data >= ?)
+            WHERE c.paciente_id = ?
+            AND (c.status IN ('agendada','realizada','cancelada','nao-compareceu')
+                 AND (c.data >= ? OR c.status='realizada' AND c.data = ?))
             ORDER BY c.data, c.hora";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id_usuario, $data_hoje, $data_hoje]);
@@ -41,7 +52,8 @@ if ($perfil === 'paciente') {
             'hora' => $c['hora'],
             'medico' => $c['medico'],
             'status' => $c['status'],
-            'tipo' => 'consulta'
+            'tipo' => 'consulta',
+            'className' => getStatusClass($c['status'])
         ];
     }
 }
@@ -51,9 +63,9 @@ elseif ($perfil === 'medico') {
     $sql = "SELECT c.id, c.data, c.hora, u.nome AS paciente, c.status
             FROM consultas c
             JOIN usuarios u ON c.paciente_id = u.id
-            WHERE c.medico_id = ? 
-            AND (c.status = 'agendada' OR (c.status = 'realizada' AND c.data = ?))
-            AND (c.data >= ?)
+            WHERE c.medico_id = ?
+            AND (c.status IN ('agendada','realizada','cancelada','nao-compareceu')
+                 AND (c.data >= ? OR c.status='realizada' AND c.data = ?))
             ORDER BY c.data, c.hora";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id_usuario, $data_hoje, $data_hoje]);
@@ -66,14 +78,15 @@ elseif ($perfil === 'medico') {
             'hora' => $c['hora'],
             'paciente' => $c['paciente'],
             'status' => $c['status'],
-            'tipo' => 'consulta'
+            'tipo' => 'consulta',
+            'className' => getStatusClass($c['status'])
         ];
     }
 
     $sql = "SELECT pr.id, pr.data, pr.descricao, u.nome AS paciente
             FROM procedimentos pr
             JOIN usuarios u ON pr.paciente_id = u.id
-            WHERE pr.medico_id = ? 
+            WHERE pr.medico_id = ?
             AND (pr.data >= ?)
             ORDER BY pr.data";
     $stmt = $pdo->prepare($sql);
@@ -85,7 +98,8 @@ elseif ($perfil === 'medico') {
             'title' => 'Procedimento: '.$p['descricao'].' - '.$p['paciente'],
             'start' => $p['data'],
             'paciente' => $p['paciente'],
-            'tipo' => 'procedimento'
+            'tipo' => 'procedimento',
+            'className' => 'procedimento'
         ];
     }
 }
@@ -108,7 +122,8 @@ elseif ($perfil === 'enfermeiro') {
             'start' => $i['data_internacao'],
             'end'   => $i['data_alta'] ?: null,
             'paciente' => $i['paciente'],
-            'tipo' => 'internacao'
+            'tipo' => 'internacao',
+            'className' => 'internacao'
         ];
     }
 }
@@ -122,15 +137,14 @@ $eventosJSON = json_encode($eventos);
 <meta charset="UTF-8">
 <title>Calendário Interativo</title>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 <link rel="stylesheet" href="estilo.css">
 <link rel="icon" href="../favicon_round.png" type="image/png">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-height:100vh; }
 
 /* Header */
@@ -146,11 +160,8 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
 .btn-primary { background:#1b8aa6; color:white; padding:8px 24px; border:none; border-radius:8px; font-weight:500; cursor:pointer; transition:background-color 0.3s ease; }
 .btn-primary:hover { background:#166e87; }
 
-/* Título do calendário */
+/* Título */
 .calendar-title { text-align:center; font-size:32px; font-weight:700; color:#1b8aa6; margin:32px 0 16px; }
-
-/* Caixa de informações */
-.info-box { max-width:900px; margin:0 auto 24px; padding:16px 24px; background:#e0f7fa; border-left:5px solid #1b8aa6; border-radius:8px; color:#074d59; }
 
 /* Legenda */
 .legend { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
@@ -164,78 +175,69 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
 
 /* Calendário */
 #calendar { max-width:1000px; margin:0 auto 48px; background:white; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.1); padding:20px; }
-
-/* Dias */
 .fc .fc-daygrid-day { border-radius:8px; transition:all 0.3s ease; }
 .fc .fc-daygrid-day:hover { background:rgba(27,138,166,0.05); transform:translateY(-2px); box-shadow:0 6px 20px rgba(27,138,166,0.1); }
-
-/* Dia atual */
 .fc .fc-day-today { background:linear-gradient(135deg, #66D9D9 0%, #8BCAD9 100%); color:white; }
 
-/* Eventos */
+/* Eventos via className */
 .fc-event { border:none; border-radius:8px; padding:6px 8px; font-size:13px; font-weight:500; color:white; box-shadow:0 4px 15px rgba(27,138,166,0.3); cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease; }
 .fc-event:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(27,138,166,0.5); }
+.fc-event.consulta { background:#1b8aa6 !important; }
+.fc-event.consulta-realizada { background:#0c7183 !important; }
+.fc-event.consulta-cancelada { background:#e53e3e !important; }
+.fc-event.consulta-nao-compareceu { background:#f59e0b !important; }
+.fc-event.procedimento { background:#66d9d9 !important; }
+.fc-event.internacao { background:#f6d365 !important; }
 
-/* Status e tipos */
-.fc-event[data-status="realizada"] { background:#0c7183; }
-.fc-event[data-status="cancelada"] { background:#e53e3e; }
-.fc-event[data-type="procedimento"] { background:#66d9d9; }
-.fc-event[data-type="internacao"] { background:#f6d365; }
-
-/* Cartão flutuante */
+/* Event card e overlay */
 .event-card { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%) scale(0); width:300px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:16px; z-index:999; transition:transform 0.3s ease, opacity 0.3s ease; opacity:0; font-family:'Inter',sans-serif; }
 .event-card.visible { transform:translate(-50%, -50%) scale(1); opacity:1; }
 .event-card .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .event-card .card-header h3 { font-size:18px; font-weight:600; color:#1b8aa6; }
 .event-card .card-header span { cursor:pointer; font-size:16px; color:#e53e3e; }
 .event-card .card-body p { margin:4px 0; font-size:14px; color:#374151; }
-
-/* Overlay escuro */
 #calendar-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:998; }
 #calendar-overlay.visible { display:block; }
-
-/* Footer (mantido simples) */
-.footer { background:#016161; color:white; padding:48px 0; }
-.footer-content { display:grid; gap:32px; }
-@media(min-width:768px){ .footer-content{ grid-template-columns:repeat(4,1fr); } }
-.footer-logo { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
-.footer-logo-icon { width:40px; height:40px; background:#1b8aa6; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.footer-logo-icon svg { width:24px; height:24px; color:white; }
-.footer-logo-text { font-size:20px; font-weight:700; }
-.footer-description { color:white; }
-.footer-title { font-size:18px; font-weight:600; margin-bottom:16px; }
-.footer-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
-.footer-list li { color:white; }
-.footer-bottom { border-top:1px solid #374151; margin-top:32px; padding-top:32px; text-align:center; color:white; }
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<header class="header">
+<header class="header clinic-header">
     <nav class="nav">
-        <div class="nav-container">
-            <div class="logo">
-                <img src="../logo.png" alt="Logo Clínica Lumière" style="width:50px; height:50px; border-radius:50%;">
-                <h1 class="logo-text">Clínica Lumière</h1>
-            </div>
-            <div class="nav-links flex items-center gap-6">
-                <span class="text-gray-700">Bem-vindo, <?php echo $tratamento . ' ' . $nome_usuario; ?></span>
-                <a href="../dashboard.php" class="nav-link">Menu</a>
-                <a href="../index.php" class="btn-primary">Sair</a>
-            </div>
+        <div class="nav-left">
+            <a href="../dashboard.php">
+                <img src="../logo.png" alt="Logo Clínica Lumière" class="logo">
+            </a>
+            <h1>Clínica Lumière</h1>
+        </div>
+
+        <div class="nav-right">
+            <span class="welcome-text">
+                <?php
+                if ($_SESSION['perfil'] === 'medico') {
+                    echo 'Bem-vindo, Dr(a). ';
+                } elseif ($_SESSION['perfil'] === 'enfermeiro') {
+                    echo 'Bem-vindo, Enfermeiro(a) ';
+                } else {
+                    echo 'Bem-vindo, ';
+                }
+
+                echo htmlspecialchars($_SESSION['nome'] ?? 'Usuário');
+                ?>
+            </span>
+
+            <ul class="menu-topo">
+                <li><a href="../dashboard.php"><i class="fa fa-home icon"></i>Menu</a></li>
+                <li><a href="../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>
+            </ul>
         </div>
     </nav>
 </header>
 
+
 <h2 class="calendar-title">📅 Calendário Interativo</h2>
 
-<div class="info-box">
-    <h3>Informações do Calendário</h3>
-    <p><strong>⚠️ Consultas realizadas de dias anteriores não são exibidas.</strong></p>
-    <p>Apenas consultas futuras e consultas realizadas <strong>hoje</strong> aparecem no calendário.</p>
-</div>
-
+<!-- LEGENDA COLORIDA ACIMA DO CALENDÁRIO -->
 <div class="legend">
     <span class="consulta">Consulta Agendada</span>
     <span class="consulta-realizada">Consulta Realizada</span>
@@ -247,7 +249,6 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
 
 <div id="calendar"></div>
 
-<!-- Cartão flutuante do evento -->
 <div id="event-card" class="event-card">
     <div class="card-header">
         <h3 id="event-title"></h3>
@@ -261,8 +262,7 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
         <p id="event-status"></p>
     </div>
 </div>
-
-<footer class="footer">
+  <footer class="footer">
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
@@ -305,14 +305,12 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
         <div class="footer-bottom">© 2025 Clínica Lumière. Todos os direitos reservados.</div>
     </div>
 </footer>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let eventos = <?php echo $eventosJSON; ?>;
     let calendarEl = document.getElementById('calendar');
     let eventCard = document.getElementById('event-card');
 
-    // Overlay para escurecer fundo
     let overlay = document.createElement('div');
     overlay.id = 'calendar-overlay';
     document.body.appendChild(overlay);
@@ -332,24 +330,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('event-doctor').textContent = props.medico ? "👨‍⚕️ Médico: " + props.medico : "";
             document.getElementById('event-status').textContent = props.status ? "📍 Status: " + props.status : "";
 
-            // Mostrar cartão e overlay
             eventCard.classList.add('visible');
             overlay.classList.add('visible');
-        },
-        eventContent: function(arg) {
-            let div = document.createElement('div');
-            div.innerHTML = arg.event.title;
-            div.style.fontSize = '12px';
-            div.style.padding = '2px';
-            if(arg.event.extendedProps.status) div.setAttribute('data-status', arg.event.extendedProps.status);
-            if(arg.event.extendedProps.tipo) div.setAttribute('data-type', arg.event.extendedProps.tipo);
-            return { domNodes: [div] };
         }
     });
 
     calendar.render();
 
-    // Fechar cartão
     document.getElementById('close-card').addEventListener('click', () => {
         eventCard.classList.remove('visible');
         overlay.classList.remove('visible');

@@ -22,6 +22,8 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
             <link rel="icon" href="favicon_round.png" type="image/png">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <title>Clínica Lumière - Cuidando de Você</title>
     
 </head>
@@ -39,7 +41,23 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
                 </div>
             </div>
 
-            <h4>Bem-vindo(a), <?= htmlspecialchars($nome) ?> (<?= ucfirst($perfil) ?>)</h4>
+<h4>
+<?php 
+if ($perfil == 'medico') {
+    // Verifica se o nome termina com 'a' para decidir entre Dra. e Dr.
+    $titulo = (substr($nome, -1) == 'a') ? 'Dra.' : 'Dr.';
+    echo "Bem-vindo(a), " . $titulo . ' ' . htmlspecialchars($nome);
+} 
+elseif ($perfil == 'enfermeiro') {
+    echo "Bem-vindo, Enfermeiro(a) " . htmlspecialchars($nome);
+} 
+else {
+    echo "Bem-vindo(a), " . htmlspecialchars($nome);
+}
+?>
+</h4>
+
+
    
 
     <!-- Mensagens -->
@@ -82,9 +100,8 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
 </ul>
 
             <!-- Botão Meu perfil -->
-            <button class="btn-primary">
-                <a href="../index.php">SAIR</a>
-            </button>
+           <ul class="menu-topo">
+                <li><a href="../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>                </ul>
         </div>
     </nav>
 </header>
@@ -94,9 +111,9 @@ $nao_lidas = Notificacao::contarNaoLidas($usuario_id);
                 <section id="inicio" class="hero">
     <div class="carousel-fullscreen">
         <div class="carousel-track" id="carouselTrack">
-            <div class="slide"><img src="img/4e119fde-d9a3-4fc8-8247-e0aed91f7262.png" alt="Dr. Roberto Silva"></div>
+            <div class="slide"><img src="img/b918d30b-c7bf-4a1f-9ca9-2e0c4e16cfb7-Photoroom.png" alt="Dr. Roberto Silva"></div>
             <div class="slide"><img src="img\Leonardo_Phoenix_10_Crie_imagens_de_mdicos_profissionais_com_e_2.jpg" alt="Dra. Ana Costa"></div>
-            <div class="slide"><img src="img\Leonardo_Phoenix_10_Crie_imagens_de_mdicos_profissionais_com_e_3.jpg" alt="Dr. Marcos Oliveira"></div>
+            <div class="slide"><img src="img\Leonardo_Phoenix_10_Crie_imagens_de_mdicos_profissionais_com_e_1.jpg" alt="Dr. Marcos Oliveira"></div>
             <div class="slide"><img src="img\Leonardo_Phoenix_10_Crie_imagens_que_apresentam_mdicos_profiss_1.jpg" alt="Dra. Julia Santos"></div>
             <div class="slide"><img src="img\Leonardo_Phoenix_10_Crie_imagens_que_apresentam_mdicos_profiss_0.jpg" alt="Dr. Carlos Mendes"></div>
         </div>

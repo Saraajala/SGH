@@ -214,5 +214,338 @@ body {
 }
 .nav-link:hover {
     color: rgba(2, 58, 68, 1)
+    border radius 5px;
+}
+.btn-primary {
+    margin-left: 20px;
+    padding: 8px 15px;
+    font-weight: bold;
+    background: #4b9dad;
+    border: none;
+    color: white;
+    
     border-radius: 5px;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    color: #357f8a;rgba(36, 89, 97, 1)
+}
+.btn-link {
+    color: white;
+    text-decoration: none;
+}
+ul.menu-topo {
+    display: flex;              /* Itens lado a lado */
+    gap: 15px;                  /* Espaçamento entre itens */
+    list-style: none;           /* Remove bolinhas */
+    margin: 0;
+    padding: 0;
+}
+
+ul.menu-topo li a {
+    text-decoration: none;      /* Sem sublinhado */
+    color: #fff;                /* Cor do texto */
+    background-color: #008b8b;  /* Fundo aqua escuro */
+    padding: 6px 14px;          /* Espaçamento interno */
+    border-radius: 6px;         /* Bordas arredondadas */
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+ul.menu-topo li a:hover {
+    background-color: #00a3a3;  /* Tom mais claro ao passar o mouse */
+    transform: scale(1.05);     /* Leve zoom */
+}
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.calendar-day {
+    transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(27, 73, 166, 0.15);
+}
+
+.appointment-day {
+    background: linear-gradient(135deg, #66D9D9 0%, #8BCAD9 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 217, 217, 0.4);
+}
+
+.today {
+    background: linear-gradient(135deg, #58a8b3 0%, #0c7183 100%);
+    color: white;
+}
+
+.medical-card {
+    background: white;
+    border: 1px solid rgba(139, 202, 217, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #1b8aa6 0%, #1b8aa6 0%);
+    transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(27, 73, 166, 0.4);
+}
+
+.secondary-button {
+    background: linear-gradient(135deg, #8BCAD9 0%, #66D9D9 100%);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 202, 217, 0.4);
+}
+
+.clinic-header {
+    background: linear-gradient(135deg, #1b8aa6 0%, #1b8aa6 0%);
+}
+
+.stats-card {
+    background: linear-gradient(135deg, rgba(139, 202, 217, 0.1) 0%, rgba(102, 217, 217, 0.1) 100%);
+    border: 1px solid rgba(139, 202, 217, 0.3);
+}
+
+/* Calendário */
+#calendar {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+/* Dias */
+.fc .fc-daygrid-day {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.fc .fc-daygrid-day:hover {
+    background: rgba(27, 138, 166, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(27, 138, 166, 0.1);
+}
+
+/* Dia atual */
+.fc .fc-day-today {
+    background: linear-gradient(135deg, #66D9D9 0%, #8BCAD9 100%);
+    color: white;
+}
+
+/* Eventos */
+.fc-event {
+    background: linear-gradient(135deg, #1b8aa6 0%, #1b8aa6 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 4px 6px;
+    font-size: 13px;
+    box-shadow: 0 4px 15px rgba(27, 138, 166, 0.3);
+    cursor: pointer;
+}
+
+.fc-event.fc-event-past {
+    opacity: 0.5;
+}
+
+/* Eventos realizados */
+.fc-event[data-status="realizada"] {
+    background: linear-gradient(135deg, #58a8b3 0%, #0c7183 100%);
+}
+
+/* Eventos cancelados */
+.fc-event[data-status="cancelada"] {
+    background: #e53e3e;
+}
+
+/* Procedimentos */
+.fc-event[data-type="procedimento"] {
+    background: linear-gradient(135deg, #8BCAD9 0%, #66D9D9 100%);
+}
+
+/* Internações */
+.fc-event[data-type="internacao"] {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+/* Ajuste do título do evento */
+.fc-event-title {
+    font-weight: 500;
+}
+
+/* Rodapé */
+.footer {
+    background:#016161;
+    color: white;
+    padding: 48px 0;
+}
+
+.footer-content {
+    display: grid;
+    gap: 32px;
+}
+
+@media (min-width: 768px) {
+    .footer-content {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.footer-logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--teal-custom);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-logo-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.footer-logo-text {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.footer-description {
+    color: rgb(255, 255, 255);
+}
+
+.footer-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.footer-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer-list li {
+    color: rgb(255, 255, 255);
+}
+
+.footer-bottom {
+    border-top: 1px solid var(--gray-700);
+    margin-top: 32px;
+    padding-top: 32px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+}
+
+/* Navegação */
+.nav-link {
+    text-decoration: none;
+    color: #4b9dad;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: rgba(2, 58, 68, 1);
+    border-radius: 5px;
+}
+
+.btn-primary {
+    margin-left: 20px;
+    padding: 8px 15px;
+    font-weight: bold;
+    background: #4b9dad;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    color: #357f8a;
+}
+
+.btn-link {
+    color: white;
+    text-decoration: none;
+}
+
+/* Menu topo */
+ul.menu-topo {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.menu-topo li a {
+    text-decoration: none;
+    color: #fff;
+    background-color: #008b8b;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+ul.menu-topo li a:hover {
+    background-color: #00a3a3;
+    transform: scale(1.05);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
 }
