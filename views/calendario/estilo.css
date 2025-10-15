@@ -653,4 +653,75 @@ ul.menu-topo li a:hover {
     font-size: 16px;
     color: #333;
     font-weight: 500;
+}/* === CARD DE DETALHES DO EVENTO === */
+.event-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    max-width: 90%;
+    padding: 20px;
+    opacity: 0;
+    z-index: 999;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.event-card.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.event-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #1b8aa6;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.event-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b8aa6;
+    margin: 0;
+}
+
+#close-card {
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    transition: color 0.2s;
+}
+#close-card:hover {
+    color: #e53e3e;
+}
+
+.event-card .card-body p {
+    margin: 6px 0;
+    font-size: 15px;
+    color: #374151;
+}
+
+/* === FUNDO ESCURECIDO === */
+#calendar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 998;
+}
+
+#calendar-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
