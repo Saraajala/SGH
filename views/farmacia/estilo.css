@@ -248,12 +248,6 @@
     align-items: center;
     gap: 20px;
 }
-
-.welcome-text {
-    font-weight: 600;
-    color: #1b3c45;
-}
-
 .logout-btn {
     background: #1b7b83;
     color: #fff;
@@ -337,10 +331,7 @@
     gap: 15px;
 }
 
-.welcome-text {
-    font-size: 16px;
-    color: #333;
-}
+
 
 .logout-btn {
     background-color: #0aa;
@@ -391,12 +382,7 @@ ul.menu-topo li a:hover {
     align-items: center;
     gap: 20px;
 }
-
-.welcome-text {
-    font-size: 16px;
-    color: #333;
-    font-weight: 500;
-}h2 {
+h2 {
     text-align: center;          /* Centraliza horizontalmente */
     font-family: 'Montserrat', sans-serif; /* Mesma fonte do exemplo */
     font-size: 28px;             /* Ajuste conforme necessário */
@@ -563,3 +549,79 @@ form button:hover {
 .form-section {
     animation: fadeInUp 0.9s ease;
 }
+.welcome-text{
+    font-size: 15px;
+
+} .footer {
+            background:#016161;
+            color: white;
+            padding: 48px 0;
+        }
+
+        .footer-content {
+            display: grid;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--teal-custom);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .footer-logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .footer-description {
+            color: rgb(255, 255, 255);
+        }
+
+        .footer-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-list li {
+            color: rgb(255, 255, 255);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-700);
+            margin-top: 32px;
+            padding-top: 32px;
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }

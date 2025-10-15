@@ -548,4 +548,109 @@ ul.menu-topo li a:hover {
     font-size: 16px;
     color: #333;
     font-weight: 500;
+}.header.clinic-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f9ffff;
+    border-bottom: 2px solid #e0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.header .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-left .logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.nav-left h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #005f73;
+    margin: 0;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.welcome-text {
+    font-size: 16px;
+    color: #333;
+}
+
+.logout-btn {
+    background-color: #0aa;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background-color: #088;
+}
+
+/* ======= AJUSTAR O CONTEÚDO PRINCIPAL ======= */
+.main-content {
+    margin-top: 90px; /* empurra o conteúdo pra baixo do cabeçalho fixo */
+    padding: 20px;
+}
+
+/* ======= MENU DO TOPO ======= */
+ul.menu-topo {
+    display: flex;              /* Itens lado a lado */
+    gap: 15px;                  /* Espaçamento entre itens */
+    list-style: none;           /* Remove bolinhas */
+    margin: 0;
+    padding: 0;
+}
+
+ul.menu-topo li a {
+    text-decoration: none;      /* Sem sublinhado */
+    color: #fff;                /* Cor do texto */
+    background-color: #008b8b;  /* Fundo aqua escuro */
+    padding: 6px 14px;          /* Espaçamento interno */
+    border-radius: 6px;         /* Bordas arredondadas */
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+ul.menu-topo li a:hover {
+    background-color: #00a3a3;  /* Tom mais claro ao passar o mouse */
+    transform: scale(1.05);     /* Leve zoom */
+}
+
+/* ======= AJUSTE NA NAV DIREITA ======= */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
 }

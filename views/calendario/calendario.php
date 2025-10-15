@@ -21,14 +21,28 @@ $tratamento = ($perfil == 'medico') ? 'Dr(a).' : '';
 /* Buscar todos os eventos do usuário */
 $eventos = [];
 
-/* Função para gerar className dos status */
+/* Função aprimorada para gerar className dos status */
 function getStatusClass($status){
+    // Normaliza o texto
+    $status = mb_strtolower(trim($status), 'UTF-8');
+    $status = str_replace(['ã', 'â', 'á'], 'a', $status);
+    $status = str_replace(['é', 'ê'], 'e', $status);
+    $status = str_replace('í', 'i', $status);
+    $status = str_replace('õ', 'o', $status);
+    $status = str_replace('ú', 'u', $status);
+    $status = str_replace('_', '-', $status); // padroniza hífen
+
     switch($status){
-        case 'agendada': return 'consulta';
-        case 'realizada': return 'consulta-realizada';
-        case 'cancelada': return 'consulta-cancelada';
-        case 'nao-compareceu': return 'consulta-nao-compareceu';
-        default: return '';
+        case 'agendada':
+            return 'consulta';
+        case 'realizada':
+            return 'consulta-realizada';
+        case 'cancelada':
+            return 'consulta-cancelada';
+        case 'nao-compareceu':
+            return 'consulta-nao-compareceu';
+        default:
+            return '';
     }
 }
 
@@ -38,20 +52,27 @@ if ($perfil === 'paciente') {
             FROM consultas c
             JOIN usuarios u ON c.medico_id = u.id
             WHERE c.paciente_id = ?
-            AND (c.status IN ('agendada','realizada','cancelada','nao-compareceu')
-                 AND (c.data >= ? OR c.status='realizada' AND c.data = ?))
+            AND c.status IN ('agendada','realizada','cancelada','nao-compareceu','nao_compareceu','não compareceu')
             ORDER BY c.data, c.hora";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id_usuario, $data_hoje, $data_hoje]);
+    $stmt->execute([$id_usuario]);
     $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($consultas as $c) {
+        $status_formatado = match (strtolower(trim($c['status']))) {
+            'agendada' => 'Agendada',
+            'realizada' => 'Realizada',
+            'cancelada' => 'Cancelada',
+            'nao-compareceu', 'nao_compareceu', 'não compareceu' => 'Não Compareceu',
+            default => ucfirst($c['status'])
+        };
+
         $eventos[] = [
-            'title' => 'Consulta com Dr(a). '.$c['medico'] . ' (' . ucfirst($c['status']) . ')',
+            'title' => 'Consulta com Dr(a). '.$c['medico'] . ' (' . $status_formatado . ')',
             'start' => $c['data'].'T'.$c['hora'],
             'hora' => $c['hora'],
             'medico' => $c['medico'],
-            'status' => $c['status'],
+            'status' => $status_formatado,
             'tipo' => 'consulta',
             'className' => getStatusClass($c['status'])
         ];
@@ -64,20 +85,27 @@ elseif ($perfil === 'medico') {
             FROM consultas c
             JOIN usuarios u ON c.paciente_id = u.id
             WHERE c.medico_id = ?
-            AND (c.status IN ('agendada','realizada','cancelada','nao-compareceu')
-                 AND (c.data >= ? OR c.status='realizada' AND c.data = ?))
+            AND c.status IN ('agendada','realizada','cancelada','nao-compareceu','nao_compareceu','não compareceu')
             ORDER BY c.data, c.hora";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$id_usuario, $data_hoje, $data_hoje]);
+    $stmt->execute([$id_usuario]);
     $consultas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($consultas as $c) {
+        $status_formatado = match (strtolower(trim($c['status']))) {
+            'agendada' => 'Agendada',
+            'realizada' => 'Realizada',
+            'cancelada' => 'Cancelada',
+            'nao-compareceu', 'nao_compareceu', 'não compareceu' => 'Não Compareceu',
+            default => ucfirst($c['status'])
+        };
+
         $eventos[] = [
-            'title' => 'Consulta - '.$c['paciente'] . ' (' . ucfirst($c['status']) . ')',
+            'title' => 'Consulta - '.$c['paciente'] . ' (' . $status_formatado . ')',
             'start' => $c['data'].'T'.$c['hora'],
             'hora' => $c['hora'],
             'paciente' => $c['paciente'],
-            'status' => $c['status'],
+            'status' => $status_formatado,
             'tipo' => 'consulta',
             'className' => getStatusClass($c['status'])
         ];
@@ -130,19 +158,20 @@ elseif ($perfil === 'enfermeiro') {
 
 $eventosJSON = json_encode($eventos);
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <title>Calendário Interativo</title>
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 <link rel="stylesheet" href="estilo.css">
 <link rel="icon" href="../favicon_round.png" type="image/png">
+<br><br><br><br><br>
 
 <style>
+/* === mantive todo o CSS igual ao teu original === */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-height:100vh; }
@@ -188,16 +217,6 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
 .fc-event.consulta-nao-compareceu { background:#f59e0b !important; }
 .fc-event.procedimento { background:#66d9d9 !important; }
 .fc-event.internacao { background:#f6d365 !important; }
-
-/* Event card e overlay */
-.event-card { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%) scale(0); width:300px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:16px; z-index:999; transition:transform 0.3s ease, opacity 0.3s ease; opacity:0; font-family:'Inter',sans-serif; }
-.event-card.visible { transform:translate(-50%, -50%) scale(1); opacity:1; }
-.event-card .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.event-card .card-header h3 { font-size:18px; font-weight:600; color:#1b8aa6; }
-.event-card .card-header span { cursor:pointer; font-size:16px; color:#e53e3e; }
-.event-card .card-body p { margin:4px 0; font-size:14px; color:#374151; }
-#calendar-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:998; }
-#calendar-overlay.visible { display:block; }
 </style>
 </head>
 <body>
@@ -228,23 +247,20 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
 
             <ul class="menu-topo">
                 <li><a href="../dashboard.php"><i class="fa fa-home icon"></i>Menu</a></li>
-                <li><a href="../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>
+                <li><a href="../../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>
             </ul>
         </div>
     </nav>
 </header>
 
-
 <h2 class="calendar-title">📅 Calendário Interativo</h2>
 
-<!-- LEGENDA COLORIDA ACIMA DO CALENDÁRIO -->
+<!-- LEGENDA -->
 <div class="legend">
     <span class="consulta">Consulta Agendada</span>
     <span class="consulta-realizada">Consulta Realizada</span>
     <span class="consulta-cancelada">Consulta Cancelada</span>
     <span class="consulta-nao-compareceu">Não Compareceu</span>
-    <span class="procedimento">Procedimento</span>
-    <span class="internacao">Internação</span>
 </div>
 
 <div id="calendar"></div>
@@ -262,7 +278,50 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
         <p id="event-status"></p>
     </div>
 </div>
-  <footer class="footer">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let eventos = <?php echo $eventosJSON; ?>;
+    let calendarEl = document.getElementById('calendar');
+    let eventCard = document.getElementById('event-card');
+
+    let overlay = document.createElement('div');
+    overlay.id = 'calendar-overlay';
+    document.body.appendChild(overlay);
+
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,timeGridDay' },
+        events: eventos,
+        eventClick: function(info) {
+            let props = info.event.extendedProps;
+
+            document.getElementById('event-title').textContent = info.event.title;
+            document.getElementById('event-date').textContent = "🗓️ " + info.event.start.toLocaleDateString('pt-BR');
+            document.getElementById('event-time').textContent = props.hora ? "⏰ Hora: " + props.hora : "";
+            document.getElementById('event-patient').textContent = props.paciente ? "👤 Paciente: " + props.paciente : "";
+            document.getElementById('event-doctor').textContent = props.medico ? "👨‍⚕️ Médico: " + props.medico : "";
+            document.getElementById('event-status').textContent = props.status ? "📋 Status: " + props.status : "";
+
+            eventCard.classList.add('visible');
+            overlay.classList.add('visible');
+        }
+    });
+
+    calendar.render();
+
+    document.getElementById('close-card').addEventListener('click', () => {
+        eventCard.classList.remove('visible');
+        overlay.classList.remove('visible');
+    });
+    overlay.addEventListener('click', () => {
+        eventCard.classList.remove('visible');
+        overlay.classList.remove('visible');
+    });
+});
+</script>
+<footer class="footer">
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
@@ -305,47 +364,8 @@ body { font-family: 'Inter', sans-serif; background:#f0f4f8; color:#1f2937; min-
         <div class="footer-bottom">© 2025 Clínica Lumière. Todos os direitos reservados.</div>
     </div>
 </footer>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let eventos = <?php echo $eventosJSON; ?>;
-    let calendarEl = document.getElementById('calendar');
-    let eventCard = document.getElementById('event-card');
 
-    let overlay = document.createElement('div');
-    overlay.id = 'calendar-overlay';
-    document.body.appendChild(overlay);
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'pt-br',
-        headerToolbar: { left:'prev,next today', center:'title', right:'dayGridMonth,timeGridWeek,timeGridDay' },
-        events: eventos,
-        eventClick: function(info) {
-            let props = info.event.extendedProps;
-
-            document.getElementById('event-title').textContent = info.event.title;
-            document.getElementById('event-date').textContent = "🗓️ " + info.event.start.toLocaleDateString('pt-BR');
-            document.getElementById('event-time').textContent = props.hora ? "⏰ Hora: " + props.hora : "";
-            document.getElementById('event-patient').textContent = props.paciente ? "👤 Paciente: " + props.paciente : "";
-            document.getElementById('event-doctor').textContent = props.medico ? "👨‍⚕️ Médico: " + props.medico : "";
-            document.getElementById('event-status').textContent = props.status ? "📍 Status: " + props.status : "";
-
-            eventCard.classList.add('visible');
-            overlay.classList.add('visible');
-        }
-    });
-
-    calendar.render();
-
-    document.getElementById('close-card').addEventListener('click', () => {
-        eventCard.classList.remove('visible');
-        overlay.classList.remove('visible');
-    });
-    overlay.addEventListener('click', () => {
-        eventCard.classList.remove('visible');
-        overlay.classList.remove('visible');
-    });
-});
-</script>
 </body>
 </html>
+

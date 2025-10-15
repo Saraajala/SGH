@@ -53,9 +53,17 @@ function formatarStatusQuarto($status)
 
      <div class="nav-right">
     <span class="welcome-text">
-        Bem-vindo, 
-        <?= ($_SESSION['perfil'] === 'medico') ? 'Dr(a). ' : '' ?>
-        <?= htmlspecialchars($_SESSION['nome'] ?? 'Usuário') ?>
+        <?php
+                if ($_SESSION['perfil'] === 'medico') {
+                    echo 'Bem-vindo, Dr(a). ';
+                } elseif ($_SESSION['perfil'] === 'enfermeiro') {
+                    echo 'Bem-vindo, Enfermeiro(a) ';
+                } else {
+                    echo 'Bem-vindo, ';
+                }
+
+                echo htmlspecialchars($_SESSION['nome'] ?? 'Usuário');
+                ?>
     </span>
 
     <ul class="menu-topo">
