@@ -142,7 +142,7 @@ $data_hoje = date('Y-m-d');
         <p>Você não possui consultas futuras agendadas.</p>
     <?php endif; ?>
 </div>
-<br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
