@@ -19,6 +19,8 @@ $data_hoje = date('Y-m-d');
     <title>Minhas Consultas Futuras</title>
     <link rel="stylesheet" href="estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="icon" href="../favicon_round.png" type="image/png"> 
+
     <style>
         /* ===== TABELA ESTILIZADA ===== */
         table {

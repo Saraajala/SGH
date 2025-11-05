@@ -22,6 +22,8 @@ $dispensacoes = Farmacia::listarDispensacoes();
 <title>Farmácia - Clínica Lumière</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="estilo.css">
+    <link rel="icon" href="../favicon_round.png" type="image/png"> 
+
 
 </head>
 <body>
