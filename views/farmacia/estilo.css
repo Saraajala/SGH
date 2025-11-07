@@ -625,3 +625,29 @@ form button:hover {
             text-align: center;
             color: rgb(255, 255, 255);
         }
+.search-form input[type="text"] {
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 250px;
+  transition: 0.3s;
+}
+
+.search-form input[type="text"]:focus {
+  border-color: #36aab9;
+  box-shadow: 0 0 4px rgba(0, 204, 255, 0.4);
+}
+
+.search-form button {
+  background-color: #3abdd4;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-form button:hover {
+  background-color: #009eb3;
+}

@@ -12,6 +12,14 @@ include '../../models/Paciente.php';
 $medicamentos = Farmacia::listarMedicamentos();
 $pacientes = Paciente::listar();
 $dispensacoes = Farmacia::listarDispensacoes();
+
+// 🔍 Filtragem por nome do paciente (busca tabela)
+if (!empty($_GET['busca_paciente'])) {
+    $busca = strtolower(trim($_GET['busca_paciente']));
+    $dispensacoes = array_filter($dispensacoes, function($disp) use ($busca) {
+        return strpos(strtolower($disp['paciente_nome']), $busca) !== false;
+    });
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,10 +30,66 @@ $dispensacoes = Farmacia::listarDispensacoes();
 <title>Farmácia - Clínica Lumière</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="estilo.css">
-    <link rel="icon" href="../favicon_round.png" type="image/png"> 
+<link rel="icon" href="../favicon_round.png" type="image/png"> 
+<style>
+/* Estilos adicionais */
+.search-form {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
+.search-form input[type="text"] {
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  padding: 8px 12px;
+  flex: 1;
+  transition: 0.3s;
+}
 
+.search-form input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+}
+
+.search-form button {
+  background-color: #118dacff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Campo de busca na área de dispensação */
+.paciente-search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.paciente-search input {
+  flex: 1;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: 0.3s;
+}
+
+.paciente-search input:focus {
+  border-color: #118dacff;
+  box-shadow: 0 0 4px rgba(17, 141, 172, 0.4);
+}
+</style>
 </head>
+
 <body>
 <header class="header clinic-header">
     <nav class="nav">
@@ -59,7 +123,8 @@ $dispensacoes = Farmacia::listarDispensacoes();
     </nav>
 </header>
 
-<br><br><br>  <br><br>  <h2>Controle da Farmácia</h2>
+<br><br><br><br><br>  
+<h2>Controle da Farmácia</h2>
 
 <div class="main-container">
 
@@ -75,45 +140,60 @@ $dispensacoes = Farmacia::listarDispensacoes();
     <?php endif; ?>
 
     <div class="forms-container">
-    <div class="form-section">
-        <h3><i class="fa-solid fa-capsules"></i> Cadastrar Medicamento</h3>
-        <form method="POST" action="../../controllers/FarmaciaController.php">
-            <input type="hidden" name="acao" value="cadastrar">
-            <input type="text" name="nome" placeholder="Nome do medicamento" required>
-            <textarea name="descricao" placeholder="Descrição do medicamento (opcional)"></textarea>
-            <input type="number" name="quantidade" placeholder="Quantidade em estoque" required>
-            <button type="submit"><i class="fa-solid fa-plus"></i> Cadastrar</button>
-        </form>
+        <div class="form-section">
+            <h3><i class="fa-solid fa-capsules"></i> Cadastrar Medicamento</h3>
+            <form method="POST" action="../../controllers/FarmaciaController.php">
+                <input type="hidden" name="acao" value="cadastrar">
+                <input type="text" name="nome" placeholder="Nome do medicamento" required>
+                <textarea name="descricao" placeholder="Descrição do medicamento (opcional)"></textarea>
+                <input type="number" name="quantidade" placeholder="Quantidade em estoque" required>
+                <button type="submit"><i class="fa-solid fa-plus"></i> Cadastrar</button>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h3><i class="fa-solid fa-hand-holding-medical"></i> Dispensar Medicamento</h3>
+            <form method="POST" action="../../controllers/FarmaciaController.php">
+                <input type="hidden" name="acao" value="dispensar">
+                
+                <label><i class="fa-solid fa-pills"></i> Medicamento:</label>
+                <select name="medicamento_id" required>
+                    <option value="">-- Selecione --</option>
+                    <?php foreach($medicamentos as $m): ?>
+                        <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['nome']) ?> (Estoque: <?= $m['quantidade'] ?>)</option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label><i class="fa-solid fa-user"></i> Paciente:</label>
+
+                <!-- 🔍 Campo de busca de paciente -->
+                <div class="paciente-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="buscarPaciente" placeholder="Digite para buscar paciente...">
+                </div>
+
+                <select id="pacienteSelect" name="paciente_id" required>
+                    <option value="">-- Selecione --</option>
+                    <?php foreach($pacientes as $p): ?>
+                        <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nome']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+
+                <input type="number" name="quantidade" placeholder="Quantidade" required>
+                <button type="submit"><i class="fa-solid fa-share-from-square"></i> Dispensar</button>
+            </form>
+        </div>
     </div>
-
-    <div class="form-section">
-        <h3><i class="fa-solid fa-hand-holding-medical"></i> Dispensar Medicamento</h3>
-        <form method="POST" action="../../controllers/FarmaciaController.php">
-            <input type="hidden" name="acao" value="dispensar">
-            <label><i class="fa-solid fa-pills"></i> Medicamento:</label>
-            <select name="medicamento_id" required>
-                <option value="">-- Selecione --</option>
-                <?php foreach($medicamentos as $m): ?>
-                    <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['nome']) ?> (Estoque: <?= $m['quantidade'] ?>)</option>
-                <?php endforeach; ?>
-            </select>
-
-            <label><i class="fa-solid fa-user"></i> Paciente:</label>
-            <select name="paciente_id" required>
-                <option value="">-- Selecione --</option>
-                <?php foreach($pacientes as $p): ?>
-                    <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nome']) ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <input type="number" name="quantidade" placeholder="Quantidade" required>
-            <button type="submit"><i class="fa-solid fa-share-from-square"></i> Dispensar</button>
-        </form>
-    </div>
-</div>
-
 
     <h3><i class="fa-solid fa-boxes-stacked"></i> Saídas de Medicamentos</h3>
+
+    <!-- 🔍 Campo de busca da tabela -->
+    <form method="GET" action="" class="search-form">
+        <input type="text" name="busca_paciente" placeholder="Buscar por nome do paciente"
+               value="<?= htmlspecialchars($_GET['busca_paciente'] ?? '') ?>">
+        <button type="submit"><i class="fa fa-search"></i> Buscar</button>
+    </form>
+
     <table>
         <thead>
             <tr>
@@ -145,6 +225,7 @@ $dispensacoes = Farmacia::listarDispensacoes();
 
     <a href="../dashboard.php" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Voltar ao Início</a>
 </div>
+
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
@@ -189,6 +270,19 @@ $dispensacoes = Farmacia::listarDispensacoes();
     </div>
 </footer>
 
+<!-- 🔍 Script JS para busca dinâmica de pacientes -->
+<script>
+document.getElementById('buscarPaciente').addEventListener('input', function() {
+    const filtro = this.value.toLowerCase();
+    const select = document.getElementById('pacienteSelect');
+    const opcoes = select.querySelectorAll('option');
+
+    opcoes.forEach(opt => {
+        const texto = opt.textContent.toLowerCase();
+        opt.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
 
 </body>
 </html>

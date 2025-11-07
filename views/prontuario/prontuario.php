@@ -150,7 +150,7 @@ $tratamento = ($perfil === 'medico') ? 'Dr(a).' : '';
         <h3 class="section-title">📋 Histórico Completo</h3>
         <?php foreach($pacientes as $p): ?>
         <div class="patient-history">
-            <div class="patient-name">🧑 <?= htmlspecialchars($p['nome']) ?> (ID: <?= $p['id'] ?>)</div>
+            <div class="patient-name">🧑 <?= htmlspecialchars($p['nome']) ?> </div>
 
             <?php 
             $registros = [

@@ -1132,7 +1132,6 @@ ul.menu-topo li a:hover {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
-    left: 160%;
     animation: aparecer 0.6s ease;
 }
 

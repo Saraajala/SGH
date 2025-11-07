@@ -53,7 +53,7 @@ $total = count($notificacoes);
 
             <ul class="menu-topo">
                 <li><a href="../dashboard.php"><i class="fa fa-home icon"></i>Menu</a></li>
-                <li><a href="../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>
+                <li><a href="../../index.php"><i class="fa fa-sign-out-alt icon"></i>Sair</a></li>
             </ul>
         </div>
     </nav>
